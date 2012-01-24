@@ -1,4 +1,4 @@
-#!/l/local/bin/perl
+#!/usr/bin/env perl
 
 # © 2007, The Regents of The University of Michigan, All Rights Reserved
 #
