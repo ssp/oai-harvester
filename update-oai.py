@@ -65,14 +65,18 @@ def readConfiguration(configurationPath):
 				print "Repository »" + key + "« lacks base URL information"
 		else:
 			print "Repository with blank id in configuration: " + xml.etree.ElementTree.tostring(XMLRepository, encoding='utf-8')
-		
+	
+	
+	
 	return repositories
 
 
 
 def updateOAI(repositories, configurationPath):
-	for repositoryID in repositories:
+	for repositoryID in sorted(repositories.iterkeys()):
 		repository = repositories[repositoryID]
+		print ''
+		print u'Processing repository ID »' + repositoryID + u'«'
 		
 		# Create folder for repository if necessary.
 		repositoryOAIPath = dataPath + '/oai/' + repositoryID
@@ -92,12 +96,13 @@ def updateOAI(repositories, configurationPath):
 			responseDateElement = XML.find('responseDate')
 			if responseDateElement != None:
 				lastResponseDate = responseDateElement.text
+				print "Last response date: " + lastResponseDate
 
 		# Use the »OaiList.pl« script to download new records from OAI.
 		arguments = [downloadScriptPath, '-v', '-c', configurationPath, '-i', repositoryID, '-d', repositoryOAIPath]
 		if lastResponseDate != None:
 			arguments += ['-f', lastResponseDate]
-		print arguments
+		print 'Running command: ' + ' '.join(arguments)
 		result = subprocess.call(arguments)
 
 
