@@ -171,7 +171,7 @@ sub GetOAIResponse
     my $url = shift;
 
     my $ua = LWP::UserAgent->new;
-    $ua->timeout( 1000 ); ## # of seconds
+    $ua->timeout( 60 ); ## # of seconds
     my $req = HTTP::Request->new( GET => $url );
     my $res = $ua->request( $req );
 
