@@ -1,19 +1,16 @@
 #!/usr/bin/php
 <?php
-/******************************************************************************************
-	 oaidiggr.php
-	 Harvester fuer OAI-Schnittstellen Version 1.4 - 31.08.2006
-         2006 by Andres Quast <a.quast@gmx.de>
-         CC-Lizenz
-*******************************************************************************************/
+/**
+ * oaidiggr.php
+ * Harvester fuer OAI-Schnittstellen
+ * 2006 by Andres Quast <a.quast@gmx.de>
+ * CC-Lizenz
+ *
+ * Kommandozeilentool zum Harvesten von OAI_Schnittstellen.
+ * einzelne Records werden in ein fuer Zebra lesbares XML-Format geschrieben
+ */
 
-/** ***********************
-*
-* Kommandozeilentool zum Harvesten von OAI_Schnittstellen.
-* einzelne Records werden in ein fuer Zebra lesbares XML-Format geschrieben
-* Version 1.4 (2006/08)
-*
-**************************/
+$version = "1.5 - 10/2006";
 
 /*Argumente aus der Standardeingabe ermitteln, Standardausgabe schreiben */
 if (in_array($argv[1], array('--help', '-help', '-h', '-?')))
@@ -38,7 +35,7 @@ Optionen:
 -imp=[Verzeichnis] Verzeichnis in dass die importierten XML-Dateien eingelesen werden
 -rec=[Verzeichnis] Verzeichnis in dass die Records geschrieben werden
 
-Version 1.5 - 10/2006 
+" . $version . "
 Andres Quast <a.quast@gmx.de>    
 
 \n\n");
@@ -67,7 +64,7 @@ for($i=1; $i<$argc; $i++)
     }
 
 echo "Dieses PHP-Skript liest OAI-Schnittstellen.
-Version 1.4 - 08/2006 
+" . $version . "
 Andres Quast <a.quast@gmx.de>
 \n";
 echo "\n";
@@ -92,6 +89,10 @@ define('RECDIR', 'records');   //xml-Ablageverzeichnis
 if($importDir == "") $importDir = XMLDIR; 
 if($recDir == "") $recDir = RECDIR; 
 
+if (!file_exists($importDir)) { mkdir($importDir); }
+if (!file_exists($recDir)) { mkdir($recDir); }
+
+
 //Starte Skript
 include('diggr_class.php');
 include('diggr_harv.php');
@@ -100,22 +101,20 @@ include('diggr_zebra.php');
 include('diggr_shell.php');
 
 
-$repository = readTxt();
+$repositories = readTxt();
 
 removeFiles($importDir.'/*fetch*');//Verlorene Cache-Dateien loeschen
 
-if(!$onlyZebra) 
-    {
-    $repResults = harvesting($repository, $verbose, $useParsExt, $importDir, $recDir);
-    }
-else
-    {
+$results = Null;
+if(!$onlyZebra) {
+    $results = harvesting($repositories, $verbose, $useParsExt, $importDir, $recDir);
+}
+else {
     $zebraOn = TRUE;
-    }
+}
 
 zebraUpdate($zebraOn, $recDir);
-renameFiles('.xml.txt .xml '.$importDir.'/*');//Cache-Dateien in Arbeitsdateien schreiben
-removeFiles($importDir.'/*fetch*');//Verlorene Cache-Dateien loeschen
-displayHits($repResults);
-
+renameFiles('.xml.txt .xml '.$importDir.'/*'); //Cache-Dateien in Arbeitsdateien schreiben
+removeFiles($importDir.'/*fetch*'); //Verlorene Cache-Dateien löschen
+displayHits($results);
 ?>

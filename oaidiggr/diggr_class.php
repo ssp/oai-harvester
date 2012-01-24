@@ -1,4 +1,4 @@
-<?
+<?php
 /***********************************************
 *Klassenbibliothek Version 1.2 - 18.05.2006
 *Andres Quast a.quast@gmx.de 
@@ -9,6 +9,7 @@ class xmlwork{
 /*Klasse zum Verarbeiten von XML-Dateien unter PHP4 und PHP5*/
 //var...
 var $sxe;                       //@object, Enthaelt den gesamten XML-File
+var $limiter;
 var $url;                       //@string, Die abzufragende URL
 var $resumptionUrl;             //@string, Die um den resumptionToken erweiterte URL
 var $error;                     //@string, Ausgabe von Fehlern
@@ -16,7 +17,7 @@ var $version;                   //Versionsbestimmung
 var $elementArray;              //Ergebnisarray fuer die Elemente
 var $attributArray;             //Ergebnisarray fuer die Attribute
 var $i_err = 0;                 //Ergebniszaehler
-var $pathImport;     //@string, Pfad des Importverzeichnisses
+var $pathImport;                //@string, Pfad des Importverzeichnisses
 var $file;                      //@string, Dateiname der entstehenden XML-Datei
 var $fetchFile;                 //@string, Dateiname der Datei, die bei Parserfehlern angelegt wird 
 
@@ -25,7 +26,7 @@ var $verbose=0;
 function xmlwork($url, $file, $debug, $importDir)  //Konstruktor
 {
 
-$limiter = "";
+$this->limiter = "";
 
 $this->url = $url;
 $this->file = $file;
@@ -103,6 +104,7 @@ function resumptionGet() //Funktion stellt fest, ob ein resumptionToken existier
 $resumption = $this->element('resumptionToken');
 if(!$resumption && !$this->sxe)
     {
+	var_dump($this->pathImport);
     $resumption[0] = $this->fileTokenizer($this->pathImport, $this->fetchFile, 'resumptionToken');
     if($resumption[0] == "") unset($resumption);
     else
@@ -146,6 +148,7 @@ function responseDateGet() //Function stellt das letzte ResponseDatum fest
 $responseDate = $this->element('responseDate');
 if(!$responseDate && !$this->sxe)
     {
+	var_dump($this->pathImport);
     $responseDate = $this->fileTokenizer($this->pathImport, $this->fetchFile, 'responseDate');
     echo "ResponseDate aus Datei gelesen: ".$responseDate."\n";//DEBUG
     $lastDateTime = $responseDate;
@@ -199,92 +202,72 @@ else
     }
 }//function fetchXmlFile Ende
 
-function fileTokenizer ($path, $file, $token) //Funktion zum Zerlegen von xml-Dateien anhand von Tags
-{
-    if(!$fileHandle = fopen($path.'/'.$file, 'r')) 
-        {
-        $this->error[$this->i_err++] = "Datei = ".$path."/".$file." konnte nicht gelesen werden\n";
-        echo "Datei = ".$path."/".$file." konnte nicht gelesen werden\n";
-        } 
-    else    
-        {
-        
+// Funktion zum Zerlegen von xml-Dateien anhand von Tags
+function fileTokenizer ($path, $file, $token) {
+	var_dump($path);
+	$zeile = Array();
+	$content = '';
+
+    if(!$fileHandle = fopen($path.'/'.$file, 'r')) {
+        $this->error[$this->i_err++] = "Datei = " . $path . "/" . $file . " konnte nicht gelesen werden.\n";
+        echo "Datei = " . $path . "/" . $file . " konnte nicht gelesen werden.\n";
+    } 
+    else {
         $i = 0;
-        
-        //$startpattern = '/<'.$token.'/';
+        $openTag = Null;
+		$workzeile = '';
+
         $startpattern = '/<'.$token.'.*?>/';
         $endpattern =  '/<\/'.$token.'>.*/';
-        $cutpattern = '<'.$token.'>';
         $brokenpattern = '/<'.$token.'[^>]+/';
-        while($rawzeile = fgets($fileHandle))
-            {
-            
+
+        while($rawzeile = fgets($fileHandle)) {
             // Einzelne Zeilen mit Daten raussuchen
             $i = 0;
-            //$z = 0;
-        
-    
-            if(preg_match($startpattern, $rawzeile) && preg_match($endpattern, $rawzeile))
-                {
+
+            if(preg_match($startpattern, $rawzeile) && preg_match($endpattern, $rawzeile)) {
                 $zeile[$i++] = $rawzeile;
-                //echo "startpattern getroffen\n";
-                }
+	        }
 
-            if(preg_match($brokenpattern, $rawzeile))
-                {
-                //echo "Brokenpattern getroffen\n";
-
+            if(preg_match($brokenpattern, $rawzeile)) {
                 $workzeile = trim($rawzeile);
-                $openTag = true;
-                }
+            }
             
-            if($openTag)
-                {
+            if($openTag === True) {
                 $workzeile .= trim($rawzeile);
-                if(is_int($test = strpos($rawzeile, ">")))
-                    {
+                if(is_int(strpos($rawzeile, ">"))) {
                     $openTag = false;
                     $zeile[$i++] = $workzeile;
-                    //echo "Workzeile: ".$workzeile."\n";
-
-                    }
                 }
-
             }
+        }
         
-        $k = 0;
-        $i = count($zeile);
-        if($this->verbose == 1 && isset($zeile))
-            {
-            foreach($zeile as $temp)
-                {
-                echo "Inhalt der Zeile ".$k++.': '.$temp."\n"; 
-                }
+        if ($this->verbose == 1) {
+            foreach ($zeile as $index => $value) {
+                echo "Inhalt der Zeile " . $index . ': ' . $value."\n";
             }
-        //$cutzeile = strstr($zeile[($i-1)], $cutpattern);
-        $cutzeile = preg_split($startpattern, $zeile[($i-1)]); //gibt das Startpattern und den Rest der Zeile zurueck
-        $content = preg_replace($endpattern, "", $cutzeile[1]); //
-        if($this->verbose == 1)
-            {
-            echo "Inhalt: ".$cutzeile[1]."\n";
-            }
-
-        fclose($fileHandle);
         }
 
-        if($this->verbose == 1)
-            {
-            echo "Inhalt: ".$content."\n";
-            }
+		$i = count($zeile);
+		if ($i > 0) {
+	        $cutzeile = preg_split($startpattern, $zeile[$i-1]); //gibt	 das Startpattern und den Rest der Zeile zurueck
+	        $content = preg_replace($endpattern, "", $cutzeile[1]);
+		    if($this->verbose == 1) {
+			    echo "Inhalt: " . $cutzeile[1] . "\n";
+			}
+		}
 
-return($content);
-}//function fileTokenizer
+        fclose($fileHandle);
+	}
+
+	return $content;
+} //function fileTokenizer
 
 
-function trimTags()
-//Funktion entfernt in der Cache-Datei ueberfluessige und stoerende (Leer-)Zeichen aus den Tags
-{
-    Global $useDCParse;
+
+// Funktion entfernt in der Cache-Datei überfluessige und störende (Leer-)Zeichen aus den Tags.
+function trimTags() {
+    global $useDCParse;
     
     $zeile = "";
     if(!$fileHandle = fopen($this->pathImport.'/'.$this->fetchFile, 'r')) 
@@ -360,13 +343,13 @@ function element($element)  //Element-Inhalte in einen Array lesen
     if($this->version && $this->sxe) //Elemente in Array lesen fuer PHP4
         {
         //if(($limiter != "") && ($this->sxe))
-        if($limiter != "")
+        if($this->limiter != "")
             {
             foreach ($this->sxe->get_elements_by_tagname($element) as $objekt_var)
                 {
                 foreach($objekt_var->attributes($element) as $temp)
                     {
-                    if($temp->value == $limiter)
+                    if($temp->value == $this->limiter)
                         {
                         $this->elementArray[] = $objekt_var->get_content($element);
                         }
@@ -383,13 +366,13 @@ function element($element)  //Element-Inhalte in einen Array lesen
         }
     else //Elemente in Array lesen fuer PHP5
         {
-        if(($limiter != "") && ($this->sxe))
+        if(($this->limiter != "") && ($this->sxe))
             {
             foreach($this->sxe->xpath("//$element") as $objekt_var)
                 {
                 foreach($objekt_var->attributes() as $temp)
                     {
-                    if($temp == $limiter)
+                    if($temp == $this->limiter)
                         {
                         echo "Hier steht eine Debug-Variable: ".$objekt_var."<br>\n";
                         $this->elementArray[] = "$objekt_var";
@@ -398,7 +381,7 @@ function element($element)  //Element-Inhalte in einen Array lesen
                } 
             }
         
-        elseif(($limiter == "") && ($this->sxe))
+        elseif(($this->limiter == "") && ($this->sxe))
             {
             $temp =  $this->sxe->xpath("//$element");
             $this->error[$this->i_err++] = "Keine Zweite Variable angegeben";

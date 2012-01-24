@@ -1,4 +1,4 @@
-<?
+<?php
 /******************************************************************************************
 	 diggr_shell.php
 	 Harvester fuer OAI-Schnittstellen Version 1.5 - 11.10.2006
@@ -20,9 +20,10 @@ echo "Raeume auf... ".$command."\n";
 
 function utfconditioner($path)
 {
-Global $verbose;
+global $verbose;
 
-$command =  'cat '.$path.'| ./utf8conditioner -x > '.$path.'.bak';
+$command =  'cat ' . $path . '| ' . dirname(__FILE__) . '/utf8conditioner -x > '.$path.'.bak';
+var_dump($command);
 $shell = shell_exec("$command");
 
 $command =  'cp '.$path.'.bak '.$path;

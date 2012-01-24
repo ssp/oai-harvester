@@ -1,4 +1,4 @@
-<?
+<?php
 /******************************************************************************************
 	 vlib_oai_extended.incl.php
 	 Harvester fuer OAI-Schnittstellen Version 1.4 - 31.08.2006

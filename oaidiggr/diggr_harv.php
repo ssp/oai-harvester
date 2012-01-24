@@ -1,4 +1,4 @@
-<?
+<?php
 /******************************************************************************************
 	 diggr_harv.php
 	 Harvester fuer OAI-Schnittstellen Version 1.4 - 31.08.2006
@@ -33,204 +33,195 @@
 * 
 **************************/
 
-function readTxt()
-{
-$i = 0;
-$oai_datei = fopen('repositories.txt', "r");
+/*Einlesen der Repositories und ihrer Abfragemodalitäten aus der Datei repositories.txt*/
+function readTxt() {
+	$repositories = Array();
 
-/*Einlesen der Repositories und ihrer Abfragemodalitaeten aus der Datei repositories.txt*/
+	$oai_datei = fopen('repositories.txt', "r");
+	while($rawzeile = fgets($oai_datei)) {
+		//Zeile ab '#' ignorieren
+		if(($cutpos = strpos($rawzeile,'#')) !== FALSE) {
+            $rawzeile = substr($rawzeile,0,$cutpos);
+		}
 
-while($rawzeile = fgets($oai_datei))
-    {
-    if(($cutpos = strpos($rawzeile,'#')) !== FALSE)
-        {
-        if(is_string($cutpos))//Spezialkonstrukt fuer Version 4.x noetig
-            {
-            $rawzeile = "";
-            }
-        else
-            {
-            $rawzeile = substr($rawzeile,0,$cutpos);  //Zeile ab '#' ignorieren
-            }
-        }
+		$zeile = explode(",", $rawzeile);
+		if(count($zeile) > 2) {
+			$repositories[] = Array(
+				// Bezeichnung des Repositorys
+				'Name' => trim($zeile[0]),
+				// Abzufragende URL
+				'Url' => trim($zeile[1]),
+				// Dateiname der späteren XML-Datei
+				'File' => trim($zeile[2]),
+				// Art der OAI-Antwort
+				'Prefix' => (count($zeile) > 3) ? trim($zeile[3]) : '',
+				// Abzufragendes Set
+				'Set' => (count($zeile) > 4) ? trim($zeile[4]) : '',
+				// Filter für geowissenschaftliche Arbeiten
+				'Select' => (count($zeile) > 5) ? trim($zeile[5]) : ''
+			);
+		}
+	}
 
-    if($rawzeile != "")
-        {
-        $zeile = explode(",", $rawzeile);
-        $repository['Name'][$i] = trim($zeile[0]);      //Bezeichnung des Repositorys
-        $repository['Url'][$i] = trim($zeile[1]);       //Abzufragende Url
-        $repository['File'][$i] = trim($zeile[2]);      //Dateiname der spaeteren XML-Datei
-        $repository['Prefix'][$i] = trim($zeile[3]);    //Art der OAI-Antwort
-        $repository['Set'][$i] = trim($zeile[4]);       //Abzufragendes Set
-
-        $repository['Select'][$i] = trim($zeile[5]);  //Startknopf: Filter fuer Geowiss. Arbeiten
-
-        $i++;
-        }
-    }
-return($repository);
+	return($repositories);
 }
 
-function harvesting ($repository, $verbose, $useParsExt, $importDir, $recDir)
+
+
 /**Einlesen der OAI-PMH Abfrage in die entsprechende XML-Datei*/
-{
-for ($i=0; $i<count($repository['Name']); $i++)
-    {
-    $queryUrl[$i] = $repository['Url'][$i].'verb=ListRecords&metadataPrefix='.$repository['Prefix'][$i];
+function harvesting ($repositories, $verbose, $useParsExt, $importDir, $recDir) {
+	global $debug;
+	foreach ($repositories as $repository) {
+		$queryURL = $repository['Url'] . 'verb=ListRecords&metadataPrefix=' . $repository['Prefix'];
 
-    if($repository['Set'][$i] != "")
-        {
-        $queryUrl[$i] .= '&set='.$repository['Set'][$i];
+		if($repository['Set'] != "") {
+	        $queryURL .= '&set='.$repository['Set'];
         }
 
-    if(!is_file($importDir.'/'.$repository['File'][$i]))
-        {
-        /**
-        *Fall 1: Import-Datei existiert noch nicht, also 
-        *erste Abfrage eines Repositories
-        */
-        echo "XML-Datei ".$repository['File'][$i]." existiert noch nicht.\nHarveste Repository  ".$repository['Name'][$i]." und erzeuge neuen XML-File\n";
+		if(!is_file($importDir.'/'.$repository['File'])) {
+			/**
+			 * Fall 1: Import-Datei existiert noch nicht, also
+			 * erste Abfrage eines Repositories
+			 */
+			echo "XML-Datei »" . $repository['File'] . "« existiert noch nicht: Harveste Repository »" . $repository['Name'] . "« und erzeuge neue XML-Datei.\n";
 
-        $oaiQuest[$i] = new xmlwork($queryUrl[$i], $repository['File'][$i], $debug, $importDir);
+			$OAIQuest = new xmlwork($queryURL, $repository['File'], $debug, $importDir);
 
-        $writeFile[$i] = $oaiQuest[$i]->writeXmlFile($importDir, $repository['File'][$i]);
-        $moreRecords[$i] = $oaiQuest[$i]->resumptionGet();
-        $error = $oaiQuest[$i]->error;
-        displayErrors($error);
+			$writeFile = $OAIQuest->writeXmlFile($importDir, $repository['File']);
+			$moreRecords = $OAIQuest->resumptionGet();
+			$error = $OAIQuest->error;
+			displayErrors($error);
 
-        $k= 0;
+			$k= 0;
+			$resumptionURLs = Array();
+			while($moreRecords != '') {
+				echo "Harveste Repository: »" . $repository['Name'] . " Resumption-Nr.: " .$k . "\n";
+				$OAIQuest = new xmlwork($moreRecords, $repository['File'], $debug, $importDir);
 
-        while($moreRecords[$i] != "")
-            {
-            echo "Harveste Repository: ".$repository['Name'][$i]." Resumption-Nr.: ".$k."\n";
-            $oaiQuest[$i] = new xmlwork($moreRecords[$i], $repository['File'][$i], $debug, $importDir);
+				$writeFile = $OAIQuest->writeXmlFile($importDir, $repository['File']);
+				$moreRecords = $OAIQuest->resumptionGet();
+				$error = $OAIQuest->error;
+				displayErrors($error);
 
-            $writeFile[$i] = $oaiQuest[$i]->writeXmlFile($importDir, $repository['File'][$i]);
-            $moreRecords[$i] = $oaiQuest[$i]->resumptionGet();
-            $error = $oaiQuest[$i]->error;
-            displayErrors($error);
+				$resumptionURLs[$k] = $moreRecords;
 
-            $resumptionUrl[$k++] = $moreRecords[$i];
+				// Prüfen, ob OAI-PMH Server keinen Fehler meldet
+				if ($resumptionURLs[$k] == $resumptionURLs[$k-1]) {
+					break;
+				}
 
-            // Pruefen, ob OAI-PMH Server keinen Fehler meldet
-            if ($resumptionUrl[($k-1)]==$resumptionUrl[($k-2)])
-            {
-            break;
-            }
+				if ($verbose == 1) {
+					echo "Resumption-URL: " . $resumptionURLs[$k] . "\n";
+				}
+				$k++;
+			}
 
-            if ($verbose == 1)
-                {
-                echo "Resumption-Url: ".$resumptionUrl[($k-1)]."\n";
-                }
-            }
+			$today = date("Y-m-d");
+			writeRootElement($repository, $importDir, $repository['File'], 'start', $today);
 
-        $today = date("Y-m-d");
-        writeRootElement($i, $repository, $importDir, $repository['File'][$i], 'start', $today);
-        $repository['Treffer'][$i] = xmlTokenizer($importDir, $repository['File'][$i], $recDir, $repository['File'][$i], 'record', $repository['Select'][$i], $verbose, $useParsExt, $repository['Name'][$i]);
-        echo "Abfrage von ".$repository['Name'][$i]." beendet.\n\n";
-        }
-    else
-        {
-        /**
-        *Fall 2: Import-Datei existiert bereits 
-        *also Pruefen und ggf. Abfragen eines Repositories
-        */
-        echo 'XML-Datei '.$repository['File'][$i]." existiert bereits, Pruefe, ob neue Eintraege im Repository vorhanden sind\n";
+			$repository['Treffer'] = xmlTokenizer($importDir, $repository['File'], $recDir, $repository['File'], 'record', $repository['Select'], $verbose, $useParsExt, $repository['Name']);
+			echo "Abfrage von »" . $repository['Name'] . "« beendet.\n\n";
+		}
+		else {
+			/**
+			 * Fall 2: Import-Datei existiert bereits
+			 * also Prüfen und ggf. Abfragen eines Repositories
+			 */
+			echo 'XML-Datei »' . $repository['File'] . "« existiert bereits, prüfe, ob neue Einträge im Repository vorhanden sind\n";
 
-        $xmlOrigFile = $importDir.'/'.$repository['File'][$i];
-        $queryUrl[$i] = $repositoryUrl[$i].'verb=ListRecords&metadataPrefix='.$repositoryPrefix[$i];
+			$xmlOrigFile = $importDir . '/' . $repository['File'];
+			$queryURL = $repository['Url'] . 'verb=ListRecords&metadataPrefix=' . $repository['Prefix'];
 
-        $getLastQuest[$i] = new xmlwork($xmlOrigFile, $repository['File'][$i], $debug, $importDir);
-        $lastDate = $getLastQuest[$i]->responseDateGet();
-        $error = $getLastQuest[$i]->error;
-        displayErrors($error);
+			$getLastQuest = new xmlwork($xmlOrigFile, $repository['File'], $debug, $importDir);
+			$lastDate = $getLastQuest->responseDateGet();
+			$error = $getLastQuest->error;
+			displayErrors($error);
 
-        $today = date("Y-m-d");
+			$today = date("Y-m-d");
 
-        echo "Heutiges Datum: ".$today."\n";
-        echo "Letztes Harvesting Datum: ".$lastDate."\n";
-        $fromTimeSt = strtotime("$lastDate + 1 Day");
-        //echo "Unix Timestamp: ".$fromTimeSt."\n";
-        $fromDate =  date("Y-m-d", $fromTimeSt);
+			echo "Heutiges Datum: " . $today . "\n";
+			echo "Letztes Harvesting Datum: " . $lastDate . "\n";
+			$fromTimeSt = strtotime("$lastDate + 1 Day");
+			//echo "Unix Timestamp: ".$fromTimeSt."\n";
+			$fromDate =  date("Y-m-d", $fromTimeSt);
 
-        if($today != $lastDate && $lastDate != "")
-            {
-            echo "Datum fuer das Harvesten: ".$fromDate."\n";
-            $queryUrl[$i] = $repository['Url'][$i].'verb=ListRecords&from='.$fromDate.'&until='.$today.'&metadataPrefix='.$repository['Prefix'][$i];
+			if($today != $lastDate && $lastDate != "") {
+				echo "Datum für das Harvesten: " . $fromDate . "\n";
+				$queryURL = $repository['Url'] . 'verb=ListRecords&from=' . $fromDate . '&until=' . $today . '&metadataPrefix=' . $repository['Prefix'];
 
-            if($repository['Set'][$i] != "")
-                {
-                $queryUrl[$i] .= '&set='.$repository['Set'][$i];
-                }
+				if($repository['Set'] != "") {
+					$queryURL .= '&set=' . $repository['Set'];
+				}
 
-            if($verbose >= 1)
-                {
-                echo "Abfrage-Url: ".$queryUrl[$i]."\n";
-                }
+				if($verbose >= 1) {
+					echo "Abfrage-URL: " . $queryURL . "\n";
+				}
 
-            $oaiNewQuest[$i] = new xmlwork($queryUrl[$i], $repository['File'][$i], $debug, $importDir, $importDir);
-            $writeFile[$i] = $oaiNewQuest[$i]->writeXmlFile($importDir, $repository['File'][$i]);
-            $moreRecords[$i] = $oaiNewQuest[$i]->resumptionGet();
-            $error = $oaiNewQuest[$i]->error;
-            displayErrors($error);
+				$OAINewQuest = new xmlwork($queryURL, $repository['File'], $debug, $importDir, $importDir);
+				$writeFile = $OAINewQuest->writeXmlFile($importDir, $repository['File']);
+				$moreRecords = $OAINewQuest->resumptionGet();
+				$error = $OAINewQuest->error;
+				displayErrors($error);
 
-            $k= 0;
+				$k= 0;
+				$resumptionURLs = Array();
+				while($moreRecords != "") {
+					$OAINewQuest = new xmlwork($moreRecords, $repository['File'], $debug, $importDir);
 
-            while($moreRecords[$i] != "" && ($moreRecords[$i] != $moreRecords[($i-1)]))
-                {
-                $oaiNewQuest[$i] = new xmlwork($moreRecords[$i], $repository['File'][$i], $debug, $importDir);
+					$writeFile = $OAINewQuest->writeXmlFile($importDir, $repository['File']);
+					$moreRecords = $OAINewQuest->resumptionGet();
+					$error = $OAINewQuest->error;
+					displayErrors($error);
 
-                $writeFile[$i] = $oaiNewQuest[$i]->writeXmlFile($importDir, $repository['File'][$i]);
-                $moreRecords[$i] = $oaiNewQuest[$i]->resumptionGet();
-                $error = $oaiNewQuest[$i]->error;
-                displayErrors($error);
+					$resumptionURLs[$k] = $moreRecords;
 
-                $resumptionUrl[$k++] = $moreRecords[$i];
-                
-                // Pruefen, ob OAI-PMH Server keinen Fehler meldet
-                if ($resumptionUrl[($k-1)]==$resumptionUrl[($k-2)])
-                    {
-                    break;
-                    }
-            
-                if ($verbose == 1)
-                    {
-                    echo "Resumption-Url: ".$resumptionUrl[($k-1)]."\n";
-                    }
-                }
-            }
-        else
-            {
-            echo "Der ".$lastDate." ist heute, deshalb kein neues Harvesting!\n";
-            }
-        removeFiles($recDir.'/*'.$repository['File'][$i]);
-        removeFiles($importDir.'/'.$repository['File'][$i].'.txt');
-        writeRootElement($i, $repository, $importDir, $repository['File'][$i], 'start', $today);
-        $repository['Treffer'][$i] = xmlTokenizer($importDir, $repository['File'][$i], $recDir, $repository['File'][$i], 'record', $repository['Select'][$i], $verbose, $useParsExt, $repository['Name'][$i]);
-        echo "Daten sind aus ".$repository['File'][$i]." extrahiert.\n\n";
-        }
-    writeRootElement($i, $repository, $importDir, $repository['File'][$i],'stop', $today);
-    }
-//removeFiles($importDir.'/*fetch*');
-return($repository);
+					// Prüfen, ob OAI-PMH Server keinen Fehler meldet
+					if ($resumptionURLs[$k] == $resumptionURLs[$k-1]) {
+						break;
+					}
+
+					if ($verbose == 1) {
+						echo "Resumption-URL: " . $resumptionURLs[$k-1] . "\n";
+					}
+					$k++;
+				}
+			}
+			else {
+				echo "Der " . $lastDate . " ist heute, deshalb kein neues Harvesting.\n";
+			}
+
+			removeFiles($recDir . '/*' . $repository['File']);
+			removeFiles($importDir . '/' . $repository['File'] . '.txt');
+
+			writeRootElement($repository, $importDir, $repository['File'], 'start', $today);
+			$repository['Treffer'] = xmlTokenizer($importDir, $repository['File'], $recDir, $repository['File'], 'record', $repository['Select'], $verbose, $useParsExt, $repository['Name']);
+
+			echo "Daten sind aus »" . $repository['File'] . " extrahiert.\n\n";
+		}
+
+		writeRootElement($repository, $importDir, $repository['File'], 'stop', $today);
+	}
+
+	//removeFiles($importDir.'/*fetch*');
+	return($repository);
 }
 
-function xmlTokenizer ($path, $file, $newpath, $newfile, $token, $limiter, $verbose, $useParsExt, $repName)
+
+
 //Funktion zum Zerlegen von xml-Dateien anhand von Tags
-{
-//$treffer = 0;
-
-utfconditioner($path.'/'.$file);
-
-if($fileHandle = fopen($path.'/'.$file, 'r'))
-    {
+function xmlTokenizer ($path, $file, $newpath, $newfile, $token, $limiter, $verbose, $useParsExt, $repName) {
+	utfconditioner($path.'/'.$file);
+	$newRow = '';
+	if($fileHandle = fopen($path.'/'.$file, 'r')) {
     unset($zeile);
     echo "Extrahiere Daten aus ".$file.".\n";
     $zahl = 20;
     $k = $zahl;
+	$i = 0;
     $j = 0;
     $cum = 1;
-
+	$mehrZeilen = Null;
+	
     while($rawzeile = fgets($fileHandle))
         {
         if ($verbose == 2)
@@ -341,7 +332,6 @@ if($fileHandle = fopen($path.'/'.$file, 'r'))
     $treffer = $j;
     echo "Anzahl Treffer: ".$treffer."\n";
     writeContentXml($newRow, $path, $file);
-    unset($newRow);
     return($treffer);
 }
 
@@ -481,64 +471,60 @@ return($ergebnisZeile);
 }
 
 
-function displayErrors($error)
-{
-Global $verbose;
+function displayErrors($error) {
+	global $verbose;
 
-    if($error && $verbose >= 1)
-        {
-        foreach($error as $temp)
-            {
-            echo "! Fehler: ".$temp."\n";
-            }
-        }
+	if($error && $verbose >= 1) {
+		foreach($error as $temp) {
+			echo "! Fehler: " . $temp . "\n";
+		}
+	}
 }
 
-function displayHits($repository)
-{
-if(isset($repository))
-    {
-    $gesamtTreffer = 0;
-    for($i=0; $i<count($repository['Name']); $i++)
-        {
-        echo $repository['Treffer'][$i]." Treffer aus ".$repository['Name'][$i]." Set: ".$repository['Set'][$i]." geharvestet!\n";
-        $gesamtTreffer = $gesamtTreffer + $repository['Treffer'][$i];
-        }
-    echo "\n\nAnzahl aller Treffer: ".$gesamtTreffer."\n";  
+
+
+function displayHits($repositories) {
+	if(isset($repositories)) {
+		$gesamtTreffer = 0;
+	
+		foreach($repositories as $repository) {
+			echo $repository['Treffer'] . " Treffer aus " . $repository['Name'] . " Set: " . $repository['Set'] . " geharvestet.\n";
+	        $gesamtTreffer += $repository['Treffer'];
+		}
+		echo "\n\nSumme aller Treffer: " . $gesamtTreffer . "\n";
     }
 }
 
-function writeRootElement($i, $repository, $path, $file, $part, $today)
-{
-$startstr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+
+
+function writeRootElement($repository, $path, $file, $part, $today) {
+	$startstr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
     <OAI-PMH xmlns=\"http://www.openarchives.org/OAI/2.0/\"
     xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
     xsi:schemaLocation=\"http://www.openarchives.org/OAI/2.0/
     http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd\">\n".
-'<responseDate>'.$today."</responseDate>\n
-<request verb=\"ListRecords\" metadataPrefix=\"oai_dc\" set=\"".$repository['Set'][$i].'" resumptionToken="">'.$repository['Url'][$i]."</request>\n
+'<responseDate>' . $today . "</responseDate>\n
+<request verb=\"ListRecords\" metadataPrefix=\"oai_dc\" set=\"" . $repository['Set'] . '" resumptionToken="">' . $repository['Url'] . "</request>\n
   <ListRecords>";
 
-$stopstr = '<resumptionToken/></ListRecords></OAI-PMH>';
+	$stopstr = '<resumptionToken/></ListRecords></OAI-PMH>';
     
-    if($part == 'start')
-        {
+    if($part == 'start') {
         $output = $startstr;
-        }
-    else
-        {
+    }
+    else {
         $output = $stopstr;
-        }
+    }
     
-    if($bakFileHandle = fopen($path.'/'.$file.'.txt', 'a'))
-        {
+    if($bakFileHandle = fopen($path.'/'.$file.'.txt', 'a')) {
         fputs($bakFileHandle, $output);
         fclose($bakFileHandle);
-        }
+    }
 }
 
-function writeContentXml($newRow, $path, $file)
-{
+
+
+function writeContentXml($newRow, $path, $file) {
 if($bakFileHandle = fopen($path.'/'.$file.'.txt', 'a'))
     {
     $output = $newRow;
