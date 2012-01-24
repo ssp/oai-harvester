@@ -1,0 +1,72 @@
+#!/usr/local/bin/perl
+
+# © 2007, The Regents of The University of Michigan, All Rights Reserved
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject
+# to the following conditions:
+#
+# The above copyright notice and this permission notice shall be
+# included in all copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+# IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+# CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+# TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+# SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+use strict;
+use UMProvider;  ## UMProvider.pm must be in @INC, push @INC, "/path/to/find/it";
+use CGI;
+use CGI::Carp;
+
+my $query  = CGI->new();
+my @params = $query->param();
+my $url    = $query->url();
+
+my $args = {};
+## foreach ( $query->param() ) { my @v = $query->param($_); $args->{$_} = "@v"; }
+foreach ( $query->param() ) { $args->{$_} = join($;, $query->param($_)); }
+
+
+my $db_user   = "user";
+my $db_passwd = "passwd";
+my $db_name   = "db_name";
+my $db_server = "db_server";
+
+my $ump = new UMProvider( 
+     configFile => "sample_conf.xml",
+     logFile    => "oai_provider.log",
+     url        => $url,
+     arguments  => $args,
+     maxItems   => 500);
+
+if ( $ump !~ /UMProvider/ ) 
+{
+    carp ($ump); 
+    print $query->header(-status => 500);
+    exit; 
+}
+
+## don't connect to the DB for Identify requests.
+if ( $query->param('verb') ne "Identify" )
+{
+    if ( ! $ump->ConnectToDb( $db_user, $db_passwd, $db_name, $db_server ) )
+    {
+        carp ("failed ConnectToDb: $db_user, $db_passwd, $db_name, $db_server"); 
+        print $query->header(-status => 500);
+        exit;
+    }
+}
+
+$ump->BuildResponse();
+print $query->header(-type => 'text/xml', -charset => 'utf-8', -status => 200);
+print $ump->toString();
+$ump->DisconnectDb();
+

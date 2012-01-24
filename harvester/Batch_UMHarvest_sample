@@ -1,0 +1,344 @@
+#!/usr/bin/perl
+
+# © 2004-2005, The Regents of The University of Michigan, All Rights Reserved
+# Version 1.0
+# used in conjunction with UMHarvester 2.1
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject
+# to the following conditions:
+#
+# The above copyright notice and this permission notice shall be
+# included in all copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+# IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+# CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+# TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+# SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+BEGIN
+{
+    require "strict.pm";
+    strict::import();
+}
+
+END
+{
+    # Exit program
+    exit;
+}
+# ----------------------------------------------------------------------
+#               start of MAIN
+# ----------------------------------------------------------------------
+
+use DBI;
+use File::Path;
+use Getopt::Std;
+use LWP::UserAgent;
+use Date::Calc qw(:all);
+
+my %opts;
+getopts('d:', \%opts);
+
+#Always assume metadata Prefix is oai_id
+my $day          = $opts{'d'};
+
+
+if ( ! $day )
+{
+    print "Usage: Batch_UMHarvest [-d M or T or W]\n";
+    exit;
+}
+
+#Set DLXSROOT to /l1
+$ENV{DLXSROOT} = '/l1';
+my $DLXSROOT = '/l1';;
+
+
+my $perform_batch = 1;
+
+# In the array, the first column is the repository, the second is the 
+# set, the third is the format (default is oai_dc), the fourth 
+# indicates if a transform should be run, and the last tells whether 
+# to skip HTML removal during transform
+# The possible values are
+# rt - run if it passes the tests (default)
+# r  - run no matter if it passes the tests or not
+# dr - don't run it!
+# s  - add -s option to skip HTML removal
+
+my @Monday = 
+(['adelaide', '', '', 'dr', ''],
+ ['admunipi', '', '', '', 's'],
+ ['twente', '66756C6C746578743D7075626C6963', '', '', 's'], 
+);
+
+my @Large1 = 
+(['ajol', '', 'mods', '', ''],
+ ['aristotle', '', '', 'dr', ''], 
+ ['azmemory', '', '', '', ''],
+);
+
+my @repositories;
+
+if ( $day eq 'M' )
+{
+    @repositories = @Monday;
+}
+
+elsif ( $day eq 'L1' )
+{
+    @repositories = @Large1;
+}
+
+else
+{
+    @repositories = @Monday;
+}
+
+my $gScriptDir = "$DLXSROOT/bin/o/oaister/scripts";
+my $gLogDir    = "$DLXSROOT/bin/o/oaister/scripts/log";
+
+my $report_page;
+
+if ( $perform_batch )
+{
+    &CreateBatchLog ();
+    
+    my $row;
+    for $row (0 .. $#repositories) {
+	#see if you have a set
+	my $request;
+	my $id = $repositories[$row][0];
+	my $set = $repositories[$row][1];
+	my $format = $repositories[$row][2];
+	my $doTransform = $repositories[$row][3];
+        my $skipHtmlRemove = $repositories[$row][4];
+        my $transformArgs = "";
+ 
+        if ( $skipHtmlRemove eq 's' )
+        {
+            $transformArgs = " -s ";
+        }  
+ 
+	if ( ! $doTransform )
+	{
+	    $doTransform = 'rt';
+	}
+	if ( ! $format )
+	{
+	    $format = 'oai_dc';
+	}
+	if ( $set )
+	{
+	    $request = qq{$gScriptDir/UMHarvester -v lr -i $id -s $set -f $format -n -b};
+	}
+	else
+	{
+	    $request = qq{$gScriptDir/UMHarvester -v lr -i $id -f $format -n -b};
+	}
+
+	#Send out request
+	my $response = `$request`;
+
+	#Find out status of request
+	my $harvest_status =    qq{======= PROCESSING $id =============\n};
+
+	#If harvest successful then you will have something in the 
+	#batch_status.log file
+	my $batch_status = &ReadStatus( 'batch_status.log' );
+
+	my $OAITransStatus;
+	if ( $batch_status =~ m,.*ERRO:.*,s )
+	{
+	    $batch_status .= qq{ERRO:  Harvest request for $id has failed.\n};
+	}
+	elsif ( $batch_status )
+	{
+	    my ( $TotalRecCnt, $NewRecCnt, $ReplacedRecCnt ) = &GetHarvestCounts ( $batch_status );
+	    if ( $doTransform eq 'dr' )
+	    {
+		#Don't try to do the OAITransform
+		$batch_status .= qq{MSG:  The setup indicates that OAITransform should not be run.\n};
+
+	    }
+	    elsif ( $doTransform eq 'rt')
+	    {
+		if ( $TotalRecCnt == 0 )
+		{
+		    $batch_status .= qq{MSG:  Total Record Count is 0, not doing OAI Trans.\n};
+		}
+		elsif ( ( $NewRecCnt == 0) && ( $ReplacedRecCnt == 0) )
+		{
+		    $batch_status .= qq{MSG:  No new records, and no replaced records, not doing OAITransform\n};
+		}
+		else
+		{
+		    #use backticks to get output back
+		    #system will not give you output
+		    my $response = `/l1/bin/o/oaister/oaitransform/OAITransform $transformArgs $id`;
+		    my ( $url_records, $failures ) = &ParseTransformResponse ( $response );
+		    $batch_status .= qq{$url_records\n};
+		    $batch_status .= qq{$failures\n};
+		}
+	    }
+	    else 
+                #the value must be r, indicating "run no matter what"
+	    {
+		#use backticks to get output back  
+	        #system will not give you output
+		my $response = `/l1/bin/o/oaister/oaitransform/OAITransform $transformArgs $id`;
+		my ( $url_records, $failures ) = &ParseTransformResponse ( $response );
+		$batch_status .= qq{$url_records\n};
+		$batch_status .= qq{$failures\n};
+	    }
+	}
+	else
+	{
+	    $batch_status .= qq{ERRO:  Harvest request for $id has failed.\n};
+	}
+	    
+	
+	#Need to get the status of OAITransform
+	$harvest_status .= $batch_status;
+
+	$report_page .= $harvest_status;
+	
+	#This clears the batch_status.log and gets it ready for the next repository
+	&CreateBatchLog ();
+
+	#Write report page to batch_status_report.log, in case the process
+	#is killed for some reason
+	&ReportToBatchLogReport ( $report_page );
+	
+    }
+
+    #Once it's all finished send email to manager
+    &SendEmail ( $report_page );
+
+}
+
+sub SendEmail 
+{
+    my ( $report_page ) = @_;
+
+    use Mail::Mailer;
+    my $mailer = new Mail::Mailer 'sendmail', Server => '';
+    $mailer->open(
+		  {
+		   'To'       => 'you@domain.xxx',
+		   'From'     => 'you@domain.xxx',
+                   'Subject'  => 'Batch Process Report',
+		  }
+		 );
+    print $mailer( $report_page );
+    $mailer->close;
+}
+
+sub ReadStatus
+{
+    my ( $filename ) = @_;
+
+    my $source = qq{$gLogDir/$filename};
+    open(FROM, "<$source");
+
+    my ($bytesRead, $buffer, $chunk);
+    while ( $bytesRead = read(FROM, $chunk, 1024) ) 
+    {
+        $buffer .= $chunk;
+    }
+    close (FROM);
+
+    return $buffer;
+}
+
+
+sub CreateBatchLog
+{
+    my $status;
+    my $fileName = qq{$gLogDir/batch_status.log};
+
+    #Now you want to create the file
+    open ( OUTFILE, ">$fileName" ) || die "failed to open $fileName: $@";
+    print OUTFILE $status;
+    close OUTFILE;
+
+}
+
+sub ReportToBatchLogReport
+{
+
+    my ( $msg ) = @_;
+
+    my $reporttime = scalar localtime(time());
+    my $fileName = qq{$gLogDir/batch_status_report.log};
+
+    my $status = qq{$reporttime\t\t$msg\n};
+
+    #Now you want to append this to the file
+    open ( OUTFILE, ">$fileName" ) || die();
+    print OUTFILE $msg;
+    close OUTFILE;
+    
+    return;
+
+}
+
+sub ReadStatus
+{
+    my ( $filename ) = @_;
+
+    my $source = qq{$gLogDir/$filename};
+    open(FROM, "<$source");
+
+    my ($bytesRead, $buffer, $chunk);
+    while ( $bytesRead = read(FROM, $chunk, 1024) ) 
+    {
+        $buffer .= $chunk;
+    }
+    close (FROM);
+
+    return $buffer;
+}
+
+
+sub ParseTransformResponse
+{
+    my ( $response ) = @_;
+
+    my $url_records = $response;
+    $url_records =~ s,.*(records with URLs.*?)\cJ.*,$1,s;
+
+    my $failures = $response;
+    $failures =~ s,.*(raw parse failures.*?)\cJ.*,$1,s;
+
+    return ( $url_records, $failures );
+}
+
+sub GetHarvestCounts
+{
+    my ( $text ) = @_;
+
+    my $TotalCnt = $text;
+    $TotalCnt =~ s,.*Total Records harvested=(.*?) .*,$1,s;
+    $TotalCnt = $TotalCnt + 0;
+
+    my $NewRecCnt = $text;
+    $NewRecCnt =~ s,.*New Records=(.*?)\..*,$1,s;
+    $NewRecCnt = $NewRecCnt +  0;
+
+    my $ReplacedRecCnt = $text;
+    $ReplacedRecCnt =~ s,.*Records replaced=(.*?)\..*,$1,s;
+    $ReplacedRecCnt = $ReplacedRecCnt + 0;
+
+    return ( $TotalCnt, $NewRecCnt, $ReplacedRecCnt );
+}
+
+__END__;

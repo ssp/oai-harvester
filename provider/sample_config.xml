@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<oai_config>
+  <Identify>
+    <repositoryName>Your Repository</repositoryName>
+    <baseURL>http://your.host.edu/OAI</baseURL>
+    <protocolVersion>2.0</protocolVersion>
+    <adminEmail>you@your.edu</adminEmail>
+    <earliestDatestamp/>
+    <deletedRecord>transient</deletedRecord>
+    <granularity>YYYY-MM-DDThh:mm:ssZ</granularity>
+    <description>
+      <oai-identifier xmlns="http://www.openarchives.org/OAI/2.0/oai-identifier"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai-identifier
+          http://www.openarchives.org/OAI/2.0/oai-identifier.xsd">
+        <scheme>oai</scheme>
+        <repositoryIdentifier>your.host.edu</repositoryIdentifier>
+        <delimiter>:</delimiter>
+        <sampleIdentifier>oai:your.host.edu:000000001</sampleIdentifier>
+      </oai-identifier>
+    </description>
+  </Identify>
+  <ListSets>
+    <set>
+      <setSpec>foo</setSpec>
+      <setName>All things of foo</setName>
+    </set>
+    <set>
+      <setSpec>bar</setSpec>
+      <setName>All things of bar</setName>
+    </set>
+  </ListSets>
+  <PossibleMetadataFormats>
+    <metadataFormat>
+      <metadataPrefix>oai_dc</metadataPrefix>
+      <schema>http://www.openarchives.org/OAI/2.0/oai_dc.xsd</schema>
+      <metadataNamespace>http://www.openarchives.org/OAI/2.0/oai_dc</metadataNamespace>
+    </metadataFormat>
+    <metadataFormat>
+      <metadataPrefix>marc21</metadataPrefix>
+      <schema>http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd</schema>
+      <metadataNamespace>http://www.loc.gov/MARC21/slim</metadataNamespace>
+    </metadataFormat>
+  </PossibleMetadataFormats>
+</oai_config>
