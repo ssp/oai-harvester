@@ -28,7 +28,7 @@ use Getopt::Std;
 use LWP::UserAgent;
 use XML::LibXML;
 
-my $repositoryConfigFile = "../RepositoryConfig.cfg";
+
 my $dataDir              = "oai/";
 
 ## ============================================================================ ##
@@ -39,8 +39,9 @@ my $dataDir              = "oai/";
 
 my $parser = new XML::LibXML;
 my %opts;
-getopts('wt:vri:s:m:f:u:x:d:', \%opts);
+getopts('c:wt:vri:s:m:f:u:x:d:', \%opts);
 
+my $repositoryConfigFile = $opts{'c'};
 my $id           = $opts{'i'};
 my $set          = $opts{'s'};
 my $mdFormat     = $opts{'m'};
@@ -53,9 +54,10 @@ my $type         = $opts{'t'};
 my $verbose      = $opts{'v'};
 my $writeRecords = $opts{'w'};
 
-if ( $id eq "" ) 
+if ( $id eq "" || $repositoryConfigFile eq "" )
 { 
-    die "\nUSAGE: $0 -i repo_id " .
+    die "\nUSAGE: $0 -c repository_config_file" .
+        "\n\t-i repo_id" .
         "\n\t[-t type_of_list (default: records) || (identifiers)]" .
         "\n\t[-s set_id (other than what is in config)] " .
         "\n\t[-m metadata_format (default oai_dc)]" .
