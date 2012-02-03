@@ -11,6 +11,9 @@
 
 	<xsl:output indent="yes" method="xml" version="1.0" encoding="UTF-8"/>
 
+	<xsl:param name="collections"/>
+
+
 	<xsl:template match="oai:OAI-PMH">
 		<xsl:apply-templates select="*"/>
 	</xsl:template>
@@ -39,6 +42,11 @@
 			<xsl:for-each select="*">
 				<xsl:apply-templates select="."/>
 			</xsl:for-each>
+			<xsl:call-template name="splitter">
+				<xsl:with-param name="list" select="$collections"/>
+				<xsl:with-param name="separator">,</xsl:with-param>
+				<xsl:with-param name="metadataType">collection</xsl:with-param>
+			</xsl:call-template>
 		</doc>
 	</xsl:template>
 
@@ -182,6 +190,43 @@
 		</field>
 	</xsl:template>
 
+
+	<xsl:template name="splitter">
+		<xsl:param name="list"/>
+		<xsl:param name="separator"/>
+		<xsl:param name="metadataType"/>
+
+		<xsl:variable name="firstItem">
+			<xsl:choose>
+				<xsl:when test="contains($list, $separator)">
+					<xsl:value-of select="normalize-space(substring-before($list, $separator))"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="$list"/>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+
+		<xsl:variable name="remainingItems" select="substring-after($list, $separator)"/>
+		
+		
+		<xsl:if test="$firstItem">
+			<field>
+				<xsl:attribute name="name">
+					<xsl:value-of select="$metadataType"/>
+				</xsl:attribute>
+				<xsl:value-of select="$firstItem"/>
+			</field>
+		</xsl:if>
+		
+		<xsl:if test="$remainingItems">
+			<xsl:call-template name="splitter">
+				<xsl:with-param name="list" select="$remainingItems"/>
+				<xsl:with-param name="separator" select="$separator"/>
+				<xsl:with-param name="metadataType" select="$metadataType"/>
+			</xsl:call-template>
+		</xsl:if>
+	</xsl:template>
 
 	<xsl:template match="text()"/>
 </xsl:stylesheet>
