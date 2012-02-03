@@ -23,13 +23,18 @@
 
 	<xsl:template match="oai:ListRecords">
 		<add>
-			<xsl:for-each select="oai:record">
+			<xsl:for-each select="oai:record[not(oai:header/@status) or oai:header/@status!='deleted']">
 				<xsl:apply-templates select="."/>
 			</xsl:for-each>
 		</add>
+		<delete>
+			<xsl:for-each select="oai:record[oai:header/@status='deleted']">
+				<xsl:apply-templates select="."/>
+			</xsl:for-each>
+		</delete>
 	</xsl:template>
 
-	<xsl:template match="oai:record">
+	<xsl:template match="oai:record[not(oai:header/@status) or oai:header/@status!='deleted']">
 		<doc>
 			<xsl:for-each select="*">
 				<xsl:apply-templates select="."/>
@@ -37,7 +42,11 @@
 		</doc>
 	</xsl:template>
 
-
+	<xsl:template match="oai:record[oai:header/@status='deleted']">
+		<id>
+			<xsl:value-of select="oai:header/oai:identifier"/>
+		</id>
+	</xsl:template>
 
 
 	<xsl:template match="oai:header">
