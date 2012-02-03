@@ -23,7 +23,10 @@
 <repository id='dalea_humgeogr'><baseUrl>http://dalea.du.se/oai/</baseUrl><fullName>Hochschule Dalarna (Schweden)</fullName><set>research:HumanGeography</set></repository>
 <repository id='dalea_'><baseUrl>http://dalea.du.se/oai/</baseUrl><fullName>Hochschule Dalarna (Schweden)</fullName><set>LifeEarthScience</set></repository>
 <repository id='michi'><baseUrl>http://deepblue.lib.umich.edu/dspace-oai/request</baseUrl><fullName>Deep Blue - University of Michigan (USA)</fullName><set>atmosphere;geology;earth;geography</set></repository>
-<repository id='oxford'><baseUrl>http://eprints.ouls.ox.ac.uk/perl/oai2</baseUrl><fullName>Oxford University (UK)</fullName><set>7375626A656374733D6F6C647375626A65637473:353030:353530</set></repository>
+<!--
+Scheinbar keine Sets mehr vorhanden
+<repository id='oxford'><baseUrl>http://ora.ouls.ox.ac.uk:8080/fedora/oai</baseUrl><fullName>Oxford University (UK)</fullName><set>7375626A656374733D6F6C647375626A65637473:353030:353530</set></repository>
+-->
 <repository id='glasgow_geogr'><baseUrl>http://eprints.gla.ac.uk/perl/oai2</baseUrl><fullName>Glasgow University (Schottland)</fullName><set>7375626A656374733D47</set></repository>
 <repository id='glasgow_geol'><baseUrl>http://eprints.gla.ac.uk/perl/oai2</baseUrl><fullName>Glasgow University (Schottland)</fullName><set>7375626A656374733D51:5145</set></repository>
 <repository id='birb_geogr'><baseUrl>http://eprints.bbk.ac.uk/perl/oai2</baseUrl><fullName>Birkbeck University of London (UK)</fullName><set>7375626A656374733D7363686F6F6C73:736F63736369:67656F67</set></repository>
@@ -51,23 +54,26 @@
 <repository id='woods_geofl'><baseUrl>http://darchive.mblwhoilibrary.org:8080/dspace-oai/request</baseUrl><fullName>Woods Hole Oceanographic Institution (USA)</fullName><set>hdl_1912_11</set></repository>
 <repository id='woods_margeoch'><baseUrl>http://darchive.mblwhoilibrary.org:8080/dspace-oai/request</baseUrl><fullName>Woods Hole Oceanographic Institution (USA)</fullName><set>hdl_1912_102</set></repository>
 <repository id='woods_ocean'><baseUrl>http://darchive.mblwhoilibrary.org:8080/dspace-oai/request</baseUrl><fullName>Woods Hole Oceanographic Institution (USA)</fullName><set>hdl_1912_7</set></repository>
-<repository id='wr_geogrsh1'><baseUrl>http://eprints.whiterose.ac.uk/perl/oai2</baseUrl><fullName>White Rose Consortium (UK)</fullName><set>756E69743D536865666669656C64:536865666669656C642E464350:536865666669656C642E47454F</set></repository>
-<repository id='wr_geogrsh2'><baseUrl>http://eprints.whiterose.ac.uk/perl/oai2</baseUrl><fullName>White Rose Consortium (UK)</fullName><set>756E69743D536865666669656C64:536865666669656C642E5F5243:536865666669656C642E474953</set></repository>
-<repository id='wr_geogrld'><baseUrl>http://eprints.whiterose.ac.uk/perl/oai2</baseUrl><fullName>White Rose Consortium (UK)</fullName><set>756E69743D4C65656473:4C656564732E46412D4541454E:4C656564732E52432D47454F47</set></repository>
-<repository id='wr_earthld'><baseUrl>http://eprints.whiterose.ac.uk/perl/oai2</baseUrl><fullName>White Rose Consortium (UK)</fullName><set>756E69743D4C65656473:4C656564732E46412D4541454E:4C656564732E52432D45415253</set></repository>
-<repository id='wr_earthsh'><baseUrl>http://eprints.whiterose.ac.uk/perl/oai2</baseUrl><fullName>White Rose Consortium (UK)</fullName><set>756E69743D536865666669656C64:536865666669656C642E464350:536865666669656C642E455343</set></repository>
-<repository id='wr_earthld2'><baseUrl>http://eprints.whiterose.ac.uk/perl/oai2</baseUrl><fullName>White Rose Consortium (UK)</fullName><set>756E69743D4C65656473:4C656564732E46412D4541454E:4C656564732E52432D45424958</set></repository>
+<repository id='wr_geogrsh1'><baseUrl>http://eprints.whiterose.ac.uk/cgi/oai2</baseUrl><fullName>White Rose Consortium (UK)</fullName><set>756E69743D536865666669656C64:536865666669656C642E464353:536865666669656C642E47454F</set></repository>
+<repository id='wr_geogrsh2'><baseUrl>http://eprints.whiterose.ac.uk/cgi/oai2</baseUrl><fullName>White Rose Consortium (UK)</fullName><set>756E69743D536865666669656C64:536865666669656C642E5F5243:536865666669656C642E474953</set></repository>
+<repository id='wr_geogrld'><baseUrl>http://eprints.whiterose.ac.uk/cgi/oai2</baseUrl><fullName>White Rose Consortium (UK)</fullName><set>756E69743D4C65656473:4C656564732E46412D4541454E:4C656564732E52432D47454F47</set></repository>
+<repository id='wr_earthld'><baseUrl>http://eprints.whiterose.ac.uk/cgi/oai2</baseUrl><fullName>White Rose Consortium (UK)</fullName><set>756E69743D4C65656473:4C656564732E46412D4541454E:4C656564732E52432D45415253</set></repository>
+<repository id='wr_earthsh'><baseUrl>http://eprints.whiterose.ac.uk/cgi/oai2</baseUrl><fullName>White Rose Consortium (UK)</fullName><set>756E69743D536865666669656C64:536865666669656C642E464350:536865666669656C642E455343</set></repository>
+<repository id='wr_earthld2'><baseUrl>http://eprints.whiterose.ac.uk/cgi/oai2</baseUrl><fullName>White Rose Consortium (UK)</fullName><set>756E69743D4C65656473:4C656564732E46412D4541454E:4C656564732E52432D45424958</set></repository>
 <repository id='rhul'><baseUrl>http://eprints.rhul.ac.uk/perl/oai2</baseUrl><fullName>Royal Holloway Univ. London (UK)</fullName><set>Geology;Geography</set></repository>
 <repository id='lusanne'><baseUrl>http://infoscience.epfl.ch/oai2d.py/</baseUrl><fullName>#Infoscience Lusanne</fullName></repository>
 <repository id='rhod_geol'><baseUrl>http://eprints.ru.ac.za/perl/oai2</baseUrl><fullName>Rhodes University (za)</fullName><set>7375626A656374733D464143:465F534349:474C47</set></repository>
-<repository id='africa_hydro'><baseUrl>http://www.ajol.info/oai/</baseUrl><fullName>African Journals Online</fullName><set>journal-28</set></repository>
-<repository id='africa_environ'><baseUrl>http://www.ajol.info/oai/</baseUrl><fullName>African Journals Online</fullName><set>journal-13</set></repository>
+<repository id='africa_hydro'><baseUrl>http://www.ajol.info/index.php/index/oai/</baseUrl><fullName>African Journals Online</fullName><set>journal-28</set></repository>
+<repository id='africa_environ'><baseUrl>http://www.ajol.info/index.php/index/oai/</baseUrl><fullName>African Journals Online</fullName><set>journal-13</set></repository>
 <repository id='doaj'><baseUrl>http://www.doaj.org/oai.article</baseUrl><fullName>DOAJ Lund University</fullName><set>Earth_and_Environmental_Sciences</set></repository>
 <repository id='arrow'><baseUrl>http://arrow.unsw.edu.au/apps/ArrowUI/OAIHandler</baseUrl><fullName>#ARROW@UNSW</fullName></repository>
 <repository id='fed'><baseUrl>http://www.fedoa.unina.it/perl/oai2</baseUrl><fullName>Napoli FedOA (it)</fullName><set>7375626A656374733D417265613034</set></repository>
+<!--
+Sets verschwunden, Setliste unklar.
 <repository id='ifremer_post'><baseUrl>http://www.ifremer.fr/docelec/oai/OAIHandler</baseUrl><fullName>ArchiMer- French Research Institute for Exploitation of the Sea</fullName><set>TYPE:POST-PUBLICATION</set></repository>
 <repository id='ifremer_work'><baseUrl>http://www.ifremer.fr/docelec/oai/OAIHandler</baseUrl><fullName>ArchiMer- French Research Institute for Exploitation of the Sea</fullName><set>TYPE:REPORTS</set></repository>
 <repository id='ifremer_proc'><baseUrl>http://www.ifremer.fr/docelec/oai/OAIHandler</baseUrl><fullName>ArchiMer- French Research Institute for Exploitation of the Sea</fullName><set>TYPE:PROCEEDING</set></repository>
+-->
 <repository id='penn'><baseUrl>http://repository.upenn.edu/cgi/oai2.cgi</baseUrl><fullName>ScholarlyCommons@Penn (USA)</fullName><set>publication:ees_5Fpapers</set></repository>
 <repository id='uq_cryst'><baseUrl>http://espace.library.uq.edu.au/oai.php</baseUrl><fullName>University of Queensland (Australia)</fullName><set>espace.library.uq.edu.au:UQ:cvo_id:cvo_id:260101</set></repository>
 <repository id='uq_ingnous'><baseUrl>http://espace.library.uq.edu.au/oai.php</baseUrl><fullName>University of Queensland (Australia)</fullName><set>espace.library.uq.edu.au:UQ:cvo_id:cvo_id:260102</set></repository>
@@ -94,7 +100,10 @@
 <repository id='pubmed_geochem'><baseUrl>http://www.pubmedcentral.gov/oai/oai.cgi</baseUrl><fullName>PubMedCentral</fullName><set>geotrans</set></repository>
 <repository id='pubmed_pnas'><baseUrl>http://www.pubmedcentral.gov/oai/oai.cgi</baseUrl><fullName>PubMedCentral</fullName><set>pnas,Phys</set></repository>
 <repository id='genesis'><baseUrl>http://genesis2.jpl.nasa.gov/perl/oai2</baseUrl><fullName>Nasa Genesis EPrints</fullName></repository>
+<!--
+Server existiert nicht mehr
 <repository id='msh_geogr'><baseUrl>http://dspace.msh-alpes.prd.fr/oai/</baseUrl><fullName>Aladin MSH-Alpes (fr)</fullName><set>hdl_1801_58</set></repository>
+-->
 <repository id='bolgeosc'><baseUrl>http://calvados.c3sl.ufpr.br/ojs2/index.php/geociencias/oai/</baseUrl><fullName>Boletim Paranaense de Geociencias (br)</fullName></repository>
 <repository id='utasm_geogr'><baseUrl>http://eprints.comp.utas.edu.au:81/perl/oai2</baseUrl><fullName>UTasER University of Tasmania Eprints Repository (au)</fullName><set>7375626A656374733D47:4746</set></repository>
 <repository id='utasm_earth'><baseUrl>http://eprints.comp.utas.edu.au:81/perl/oai2</baseUrl><fullName>UTasER University of Tasmania Eprints Repository (au)</fullName><set>7375626A656374733D51:5145</set></repository>
@@ -103,35 +112,38 @@
 <repository id='libe_astro'><baseUrl>http://libeprints.open.ac.uk/perl/oai2</baseUrl><fullName>Open University Library's e-prints Archive (uk)</fullName><set>666163756C74795F646570743D73636965:736369652D70737372</set></repository>
 <repository id='juel_sed'><baseUrl>http://juwel.fz-juelich.de:8080/dspace-oai122fzj/request</baseUrl><fullName>JUWEL Forschungszentrum Jülich (de)</fullName><set>hdl_2128_30</set></repository>
 <repository id='juel_agro'><baseUrl>http://juwel.fz-juelich.de:8080/dspace-oai122fzj/request</baseUrl><fullName>JUWEL Forschungszentrum Jülich (de)</fullName><set>hdl_2128_28</set></repository>
-<repository id='udc_palaoart'><baseUrl>http://dspace.udc.es/dspace-oai/request</baseUrl><fullName>UDC DSpace Universidade da Coruna</fullName><set>hdl_2183_603</set></repository>
-<repository id='udc_palaoconf'><baseUrl>http://dspace.udc.es/dspace-oai/request</baseUrl><fullName>UDC DSpace Universidade da Coruna</fullName><set>hdl_2183_604</set></repository>
-<repository id='udc_palaobook'><baseUrl>http://dspace.udc.es/dspace-oai/request</baseUrl><fullName>UDC DSpace Universidade da Coruna</fullName><set>hdl_2183_606</set></repository>
-<repository id='udc_agrart'><baseUrl>http://dspace.udc.es/dspace-oai/request</baseUrl><fullName>UDC DSpace Universidade da Coruna</fullName><set>hdl_2183_423</set></repository>
-<repository id='udc_agrconf'><baseUrl>http://dspace.udc.es/dspace-oai/request</baseUrl><fullName>UDC DSpace Universidade da Coruna</fullName><set>hdl_2183_424</set></repository>
+<repository id='udc_palaoart'><baseUrl>http://dspace.udc.es/oai/request</baseUrl><fullName>UDC DSpace Universidade da Coruna</fullName><set>hdl_2183_603</set></repository>
+<repository id='udc_palaoconf'><baseUrl>http://dspace.udc.es/oai/request</baseUrl><fullName>UDC DSpace Universidade da Coruna</fullName><set>hdl_2183_604</set></repository>
+<repository id='udc_palaobook'><baseUrl>http://dspace.udc.es/oai/request</baseUrl><fullName>UDC DSpace Universidade da Coruna</fullName><set>hdl_2183_606</set></repository>
+<repository id='udc_agrart'><baseUrl>http://dspace.udc.es/oai/request</baseUrl><fullName>UDC DSpace Universidade da Coruna</fullName><set>hdl_2183_423</set></repository>
+<repository id='udc_agrconf'><baseUrl>http://dspace.udc.es/oai/request</baseUrl><fullName>UDC DSpace Universidade da Coruna</fullName><set>hdl_2183_424</set></repository>
 <repository id='usq_geo'><baseUrl>http://eprints.usq.edu.au/perl/oai2</baseUrl><fullName>University of Southern Queensland</fullName><set>7375626A656374733D323630303030</set></repository>
 <repository id='petroj'><baseUrl>http://petroleumjournalsonline.com/journals/index.php/index/oai/</baseUrl><fullName>Petroleum Journals</fullName></repository>
 <repository id='salsys'><baseUrl>http://www.biomedcentral.com/oai/2.0/</baseUrl><fullName>BioMed Central: Saline Systems (uk)</fullName><set>journal:10086</set></repository>
 <repository id='geotrans'><baseUrl>http://www.biomedcentral.com/oai/2.0/</baseUrl><fullName>BioMed Central: Geochemical Transactions (uk)</fullName><set>journal:10101</set></repository>
 <repository id='cbmjournal'><baseUrl>http://www.biomedcentral.com/oai/2.0/</baseUrl><fullName>BioMed Central: Carbon Balance and Management (uk)</fullName><set>journal:10107</set></repository>
-<repository id='mmu_geogr'><baseUrl>http://e-space.openrepository.com/e-space-oai/request</baseUrl><fullName>e-space at MMU (uk)</fullName><set>hdl_2173_790</set></repository>
-<repository id='mmu_geol'><baseUrl>http://e-space.openrepository.com/e-space-oai/request</baseUrl><fullName>e-space at MMU (uk)</fullName><set>hdl_2173_792</set></repository>
-<repository id='digiz_geol'><baseUrl>http://www.digizeitschriften.de/oai2/</baseUrl><fullName>DigiZeitschriften (de)</fullName><set>ddc_550:acl_free</set></repository>
+<repository id='mmu_geogr'><baseUrl>http://e-space.openrepository.com/e-space-oai/request</baseUrl><fullName>e-space at MMU (uk)</fullName><set>hdl_2173_31596</set></repository>
+<repository id='mmu_geogr2'><baseUrl>http://e-space.openrepository.com/e-space-oai/request</baseUrl><fullName>e-space at MMU (uk)</fullName><set>hdl_2173_31632</set></repository>
+<repository id='mmu_humangeogr'><baseUrl>http://e-space.openrepository.com/e-space-oai/request</baseUrl><fullName>e-space at MMU (uk)</fullName><set>hdl_2173_94621</set></repository>
+<repository id='digiz_geol'><baseUrl>http://www.digizeitschriften.de/oai2/</baseUrl><fullName>DigiZeitschriften (de)</fullName><set>DC_550.geology_ACL_free</set></repository>
 <repository id='bolo_geol'><baseUrl>http://amsacta.cib.unibo.it/perl/oai2</baseUrl><fullName>Almae Matris Studiorum Acta Bologna (it)</fullName><set>7375626A656374733D47454F</set></repository>
-<repository id='lough_geogr'><baseUrl>https://magpie.lboro.ac.uk:8443/dspace-oai/request</baseUrl><fullName>Loughborough University Institutional Repository (en)</fullName><set>hdl_2134_161</set></repository>
+<repository id='lough_geogr'><baseUrl>https://dspace.lboro.ac.uk/dspace-oai/request</baseUrl><fullName>Loughborough University Institutional Repository (en)</fullName><set>hdl_2134_161</set></repository>
 <repository id='minho_hydr'><baseUrl>http://repositorium.sdum.uminho.pt/oai/oai</baseUrl><fullName>Repositorium Minho (pt)</fullName><set>hdl_1822_1107</set></repository>
 <repository id='minho_hydrnat'><baseUrl>http://repositorium.sdum.uminho.pt/oai/oai</baseUrl><fullName>Repositorium Minho (pt)</fullName><set>hdl_1822_1100</set></repository>
 <repository id='minho_geotec'><baseUrl>http://repositorium.sdum.uminho.pt/oai/oai</baseUrl><fullName>Repositorium Minho (pt)</fullName><set>hdl_1822_1098</set></repository>
-<repository id='ucm_geol'><baseUrl>http://www.ucm.es/eprints/perl/oai2</baseUrl><fullName>E-Prints UCM Madrid (es)</fullName><set>Geo</set></repository>
+<repository id='ucm_geology'><baseUrl>http://www.ucm.es/eprints/perl/oai2</baseUrl><fullName>E-Prints UCM Madrid (es)</fullName><set>7375626A656374733D41:415F3133</set></repository>
+<repository id='ucm_geography'><baseUrl>http://www.ucm.es/eprints/perl/oai2</baseUrl><fullName>E-Prints UCM Madrid (es)</fullName><set>7375626A656374733D44:445F3132</set></repository>
 <repository id='ucl_geol'><baseUrl>http://eprints.ucl.ac.uk/perl/oai2</baseUrl><fullName>UCL University College London (uk)</fullName><set>7375626A656374733D31:50:3130363030</set></repository>
 <repository id='peru'><baseUrl>http://www.scielo.org.pe/oai/scielo-oai.php</baseUrl><fullName>Scielo Peru (pe)</fullName><set>1561-0888</set></repository>
 <repository id='argen'><baseUrl>http://www.scielo.org.ar/oai/scielo-oai.php</baseUrl><fullName>Scielo Argentina (ar)</fullName><set>0004-4822</set></repository>
 <repository id='baltic_geochem'><baseUrl>http://cgi.vtt.fi/progs/inf/balticOAI</baseUrl><fullName>Baltic Marine Environment Bibliography (fi)</fullName><set>ASFAcategory:2181</set></repository>
 <repository id='brasil'><baseUrl>http://www.scielo.br/oai/scielo-oai.php</baseUrl><fullName>Scielo Brasilia (br)</fullName><set>0102-261X</set></repository>
 <repository id='chile'><baseUrl>http://www.scielo.cl/oai/scielo-oai.php</baseUrl><fullName>Scielo Chile (cl)</fullName><set>0716-0208</set></repository>
-<repository id='drum_geol'><baseUrl>http://drum.umd.edu/oai</baseUrl><fullName>DRUM University of Maryland (us)</fullName><set>hdl_1903_1594</set></repository>
-<repository id='drum_geogr'><baseUrl>http://drum.umd.edu/oai</baseUrl><fullName>DRUM University of Maryland (us)</fullName><set>hdl_1903_1641</set></repository>
-<repository id='drum_ocea'><baseUrl>http://drum.umd.edu/oai</baseUrl><fullName>DRUM University of Maryland (us)</fullName><set>hdl_1903_1596</set></repository>
-<repository id='oreg_geo'><baseUrl>http://ir.library.oregonstate.edu/dspace-oai/request</baseUrl><fullName>Oregon State University (us)</fullName><set>hdl_1957_1313</set></repository>
+<repository id='drum_geol'><baseUrl>http://drum.lib.umd.edu/oai-pmh</baseUrl><fullName>DRUM University of Maryland (us)</fullName><set>hdl_1903_1594</set></repository>
+<repository id='drum_geogr'><baseUrl>http://drum.lib.umd.edu/oai-pmh</baseUrl><fullName>DRUM University of Maryland (us)</fullName><set>hdl_1903_1641</set></repository>
+<repository id='drum_ocea'><baseUrl>http://drum.lib.umd.edu/oai-pmh</baseUrl><fullName>DRUM University of Maryland (us)</fullName><set>hdl_1903_1596</set></repository>
+<repository id='oreg_geography'><baseUrl>http://ir.library.oregonstate.edu/dspace-oai/request</baseUrl><fullName>Oregon State University (us)</fullName><set>hdl_1957_1721</set></repository>
+<repository id='oreg_geology'><baseUrl>http://ir.library.oregonstate.edu/dspace-oai/request</baseUrl><fullName>Oregon State University (us)</fullName><set>hdl_1957_7889</set></repository>
 <repository id='chi_geol'><baseUrl>http://www.journals.uchicago.edu/perl/oaia2/request</baseUrl><fullName>#University of Chicago Journals (us)</fullName><set>jg</set></repository>
 <repository id='hr_geocro'><baseUrl>http://hrcak.srce.hr/oai/index.php</baseUrl><fullName>Hrcak - Portal of scientific journals of Croatia (hr)</fullName><set>journal:44</set></repository>
 <repository id='hr_mining'><baseUrl>http://hrcak.srce.hr/oai/index.php</baseUrl><fullName>Hrcak - Portal of scientific journals of Croatia (hr)</fullName><set>journal:94</set></repository>
@@ -142,8 +154,8 @@
 <repository id='tulip_geogr'><baseUrl>http://130.158.56.40/dspace-oai/request</baseUrl><fullName>#Tulips-R Tsukuba Repository (jp)</fullName><set>hdl_2241_328</set></repository>
 <repository id='ply_geol'><baseUrl>http://sabella.mba.ac.uk/perl/oai2</baseUrl><fullName>Marine &amp; Ocean Science ePrints Archive Plymouth (uk)</fullName><set>7375626A656374733D51:5145</set></repository>
 <repository id='ply_geogr'><baseUrl>http://sabella.mba.ac.uk/perl/oai2</baseUrl><fullName>Marine &amp; Ocean Science ePrints Archive Plymouth (uk)</fullName><set>7375626A656374733D47</set></repository>
-<repository id='otag_geol'><baseUrl>http://eprints.otago.ac.nz/perl/oai2</baseUrl><fullName>Otoga E-Prints University Otago (nz)</fullName><set>7375626A656374733D51:5145</set></repository>
-<repository id='otag_geogr'><baseUrl>http://eprints.otago.ac.nz/perl/oai2</baseUrl><fullName>Otoga E-Prints University Otago (nz)</fullName><set>7375626A656374733D47:4731</set></repository>
+<repository id='otag_geol'><baseUrl>http://otago.ourarchive.ac.nz/oai/request</baseUrl><fullName>Otoga E-Prints University Otago (nz)</fullName><set>hdl_10523_93</set></repository>
+<repository id='otag_geogr'><baseUrl>http://otago.ourarchive.ac.nz/oai/request</baseUrl><fullName>Otoga E-Prints University Otago (nz)</fullName><set>hdl_10523_303</set></repository>
 <repository id='iisc'><baseUrl>http://eprints.iisc.ernet.in/perl/oai2</baseUrl><fullName>Open Access Repository of IISc (in)</fullName><set>7375626A656374733D4D53:4D532D436945</set></repository>
 <repository id='cad_glac'><baseUrl>http://cadair.aber.ac.uk/dspace-oai/request</baseUrl><fullName>Cadair Univ. of Wales (uk)</fullName><set>hdl_2160_270</set></repository>
 <repository id='cad_quart'><baseUrl>http://cadair.aber.ac.uk/dspace-oai/request</baseUrl><fullName>Cadair Univ. of Wales (uk)</fullName><set>hdl_2160_175</set></repository>
@@ -168,8 +180,8 @@
 <repository id='bristol_pal'><baseUrl>http://rose.bris.ac.uk/dspace-oai/request</baseUrl><fullName>Rose Bristol (uk)</fullName><set>hdl_1983_911</set></repository>
 <repository id='bristol_hydro'><baseUrl>http://rose.bris.ac.uk/dspace-oai/request</baseUrl><fullName>Rose Bristol (uk)</fullName><set>hdl_1983_931</set></repository>
 <repository id='bristol_spat'><baseUrl>http://rose.bris.ac.uk/dspace-oai/request</baseUrl><fullName>Rose Bristol (uk)</fullName><set>hdl_1983_932</set></repository>
-<repository id='hku_geol'><baseUrl>http://hub.hku.hk/dspace-oai/request</baseUrl><fullName>HKU Scholars Hub (hk)</fullName><set>hdl_123456789_38717</set></repository>
-<repository id='hku_geogr'><baseUrl>http://hub.hku.hk/dspace-oai/request</baseUrl><fullName>HKU Scholars Hub (hk)</fullName><set>hdl_123456789_38754</set></repository>
+<repository id='hku_geol'><baseUrl>http://hub.hku.hk/oai/request</baseUrl><fullName>HKU Scholars Hub (hk)</fullName><set>hdl_10722_38717</set></repository>
+<repository id='hku_geogr'><baseUrl>http://hub.hku.hk/oai/request</baseUrl><fullName>HKU Scholars Hub (hk)</fullName><set>hdl_10722_38754</set></repository>
 <repository id='suss_geogr'><baseUrl>http://eprints.sussex.ac.uk/perl/oai2</baseUrl><fullName>Sussex Research Online (uk)</fullName><set>7375626A656374733D47</set></repository>
 <repository id='suss_geol'><baseUrl>http://eprints.sussex.ac.uk/perl/oai2</baseUrl><fullName>Sussex Research Online (uk)</fullName><set>7375626A656374733D51:5145</set></repository>
 <repository id='nerc_earthSci'><baseUrl>http://nora.nerc.ac.uk/cgi/oai2</baseUrl><fullName>NERC (uk)</fullName><set>7375626A656374733D533130</set></repository>
