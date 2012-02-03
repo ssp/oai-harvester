@@ -8,6 +8,7 @@ from xml.etree import ElementTree
 from lxml import etree
 import subprocess
 import urllib2
+import shutil
 
 dataPath = 'data'
 downloadScriptPath = 'harvester/OaiList.pl'
@@ -16,9 +17,10 @@ def main():
 	harvest = False
 	transform = False
 	solrURL = None
+	delete = None
 	configurationPath = ''
 	try:
-		options, arguments = getopt.getopt(sys.argv[1:], 'c:d:hts:', ['config', 'datadir', 'harvest', 'transform', 'solr'])
+		options, arguments = getopt.getopt(sys.argv[1:], 'c:d:hts:D:', ['config=', 'datadir=', 'harvest=', 'transform', 'solr=', 'delete='])
 		for option, value in options:
 			if option in ('-c', '--config'):
 				configurationPath = value
@@ -30,10 +32,17 @@ def main():
 				transform = True
 			elif option in ('-s', '--solr'):
 				solrURL = value
+				print value
+			elif option in ('-D', '--delete'):
+				delete = value
 			else:
 				assert False, 'unhandled option'
 
 		repositories = readConfiguration(configurationPath)
+		
+		if delete != None:
+			deleteFiles(delete)
+		
 		if harvest:
 			updateOAI(repositories, configurationPath)
 
@@ -45,6 +54,7 @@ def main():
 
 
 	except getopt.GetoptError, err:
+		print str(err)
 		usage()
 		sys.exit(2)
 
@@ -90,8 +100,25 @@ def readConfiguration(configurationPath):
 	return repositories
 
 
+def deleteFiles (delete):
+	if delete in ('oai', 'temp', 'all'):
+		deleteData('oai-temp')
+	if delete in ('oai', 'all'):
+		deleteData('oai')
+	if delete in  ('solr', 'temp', 'all'):
+		deleteData('solr-temp')
+	if delete in ('solr', 'all'):
+		deleteData('solr')
 
-def updateOAI(repositories, configurationPath):
+
+def deleteData (dataType):
+	path = repositoryPath(None, dataType)
+	print "Deleting folder »" + path + "« …"
+	shutil.rmtree(path)
+
+
+
+def updateOAI (repositories, configurationPath):
 	print ''
 	print u'Updating OAI data'
 	
@@ -100,9 +127,8 @@ def updateOAI(repositories, configurationPath):
 		print ''
 		print u'Processing repository ID »' + repositoryID + u'«'
 		
-		repositoryOAIPath = repositoryPath(repositoryID, 'oai')
-		
-		# Find the latest download and extract its responseDate.
+		repositoryOAIPath = repositoryPath(repositoryID, 'oai')	
+		# Find the latest commited download and extract its responseDate.
 		lastResponseDate = None
 		fileList = os.listdir(repositoryOAIPath).sort()
 		if fileList != None and len(fileList) > 0:
@@ -116,8 +142,9 @@ def updateOAI(repositories, configurationPath):
 				lastResponseDate = responseDateElement.text
 				print "Last response date: " + lastResponseDate
 
+		repositoryOAITempPath = repositoryPath(repositoryID, 'oai-temp', True)
 		# Use the »OaiList.pl« script to download new records from OAI.
-		arguments = [downloadScriptPath, '-v', '-c', configurationPath, '-i', repositoryID, '-d', repositoryOAIPath]
+		arguments = [downloadScriptPath, '-v', '-c', configurationPath, '-i', repositoryID, '-d', repositoryOAITempPath]
 		if lastResponseDate != None:
 			arguments += ['-f', lastResponseDate]
 		print 'Running command: ' + ' '.join(arguments)
@@ -134,36 +161,40 @@ def transformXML (repositories):
 		xslXML = etree.parse('OAI-to-Solr.xsl')
 		xsl = etree.XSLT(xslXML)
 	except:
-		sys.stderr.write('ERROR: Failed to read XSL, stopping transformation')
+		sys.stderr.write('ERROR: Failed to read XSL, stopping transformations')
 		return
-		
+	
+	# loop through repositories
 	for repositoryID in sorted(repositories.iterkeys()):
 		repository = repositories[repositoryID]
 		print ''
 		print u'Processing repository ID »' + repositoryID + u'«'
 					
-		# Run through XML files in oai folder
-		repositoryOAIPath = repositoryPath(repositoryID, 'oai')
-		if os.path.exists(repositoryOAIPath):
-			fileList = os.listdir(repositoryOAIPath)
+		# Run through XML files in oai-temp folder
+		OAITempPath = repositoryPath(repositoryID, 'oai-temp')
+		OAIPath = repositoryPath(repositoryID, 'oai')
+		solrTempPath = repositoryPath(repositoryID, 'solr-temp', True)
+		if os.path.exists(OAITempPath):
+			fileList = os.listdir(OAITempPath)
 			if fileList != None:
 				if 'token.txt' in fileList:
 					fileList.remove('token.txt')
 				fileList.sort()
-				repositorySolrPath = repositoryPath(repositoryID, 'solr')
 				for fileName in fileList:
-					solrFilePath = repositorySolrPath + '/' + fileName
-					if not os.path.exists(solrFilePath):
-						try:
-							filePath = repositoryOAIPath + '/' + fileName
-							fileXML = etree.parse(filePath)
-							solrXML = xsl(fileXML)
-							solrFile = open(solrFilePath, 'w')
-							solrFile.write(etree.tostring(solrXML, encoding='utf-8', method='xml'))
-							solrFile.close()
-							print "Converted file »" + fileName + "« to Solr format"
-						except:
-							print "FAILed to convert file »" + fileName + "«"
+					print fileName
+					solrFilePath = solrTempPath + '/' + fileName
+					OAIFilePath = OAITempPath + '/' + fileName
+					try:
+						fileXML = etree.parse(OAIFilePath)
+						solrXML = xsl(fileXML, collections="'geoleo-oai'")
+						solrFile = open(solrFilePath, 'w')
+						solrFile.write(etree.tostring(solrXML, encoding='utf-8', method='xml'))
+						solrFile.close()
+						print "Created Solr file »" + solrFilePath + "«"
+						moveFile(fileName, OAITempPath, OAIPath)
+						
+					except:
+						print "ERROR converting file »" + fileName + "«"
 
 
 def updateSolr (repositories, solrURL):
@@ -177,15 +208,17 @@ def updateSolr (repositories, solrURL):
 		
 		updateURL = solrURL + '/update'
 		
+		repositorySolrTempPath = repositoryPath(repositoryID, 'solr-temp')
 		repositorySolrPath = repositoryPath(repositoryID, 'solr')
-		fileList = os.listdir(repositorySolrPath)
+		fileList = os.listdir(repositorySolrTempPath)
+		print repositorySolrTempPath
 		if fileList != None:
 			if 'token.txt' in fileList:
 				fileList.remove('token.txt')
 			fileList.sort()
 			for fileName in fileList:
-				solrFilePath = repositorySolrPath + '/' + fileName
-				solrFile = open(solrFilePath)
+				solrTempFilePath = repositorySolrTempPath + '/' + fileName
+				solrFile = open(solrTempFilePath)
 				solrXML = solrFile.read()
 				solrFile.close()
 				solrRequest = urllib2.Request(updateURL, solrXML)
@@ -195,19 +228,45 @@ def updateSolr (repositories, solrURL):
 				responseCode = solrConnection.info()
 				solrConnection.close()
 				print u'Uploading »' + fileName + u'« to Solr … '
+				moveFile(fileName, repositorySolrTempPath, repositorySolrPath)
 				
-	print u'Commiting Solr Index …'
+	print ''
+	print u'Committing Solr Index …'
 	solrCommit = urllib2.urlopen(updateURL, "commit=true")
 	solrCommit.close()
 
+
+
+def moveFile (name, oldFolder, newFolder):
+	oldPath = oldFolder + '/' + name
+	fileList = os.listdir(newFolder)
+	fileCount = 0
+	if fileList != None:
+		fileCount = len(fileList)
+	newPath = newFolder + '/' + '%09d'%(fileCount + 1) + '.xml'
+	print "Moving »" + oldPath + "« to »" + newPath + "«"
+	os.rename(oldPath, newPath)
+
+
+
+def repositoryPath (repositoryID, dataType, emptyFolder = False):
+	path = dataPath
 	
+	if dataType != None:
+		path = path + '/' + dataType
+		if repositoryID != None:	
+			path = path + '/' + repositoryID
 
-
-def repositoryPath (repositoryID, dataType):
-	path = dataPath + '/' + dataType + '/' + repositoryID
 	if not os.path.exists(path):
 		os.makedirs(path)
-		print "Created folder " + path
+		print "Created folder »" + path + "«"
+	elif emptyFolder == True:
+		if os.listdir(path) != None:
+			if len(os.listdir(path)) > 0:
+				print "Removing " + str(len(os.listdir(path))) + " files from »" + path + "«"
+				shutil.rmtree(path)
+				os.makedirs(path)
+
 	return path
 
 def usage ():
