@@ -156,7 +156,7 @@
 	</xsl:template>
 
 	<xsl:template match="dc:relation">
-		<field name="links">
+		<field name="link">
 			<xsl:value-of select="."/>
 		</field>
 	</xsl:template>
