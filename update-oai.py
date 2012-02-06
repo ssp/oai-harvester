@@ -9,6 +9,7 @@ import xml.etree
 from xml.etree import ElementTree
 from lxml import etree
 import subprocess
+import socket
 import urllib2
 import shutil
 
@@ -99,12 +100,15 @@ def determineFormats (repositories):
 
 	for repositoryID in sorted(repositories.iterkeys()):
 		repository = repositories[repositoryID]
+		if repository.has_key('broken'):
+			continue
 		print ''
 		print u'Repository ID »' + repositoryID + u'« supports:'
 		
+		timeout = 10
 		URL = repository['url'] + '?verb=ListMetadataFormats'
 		try:
-			formatsConnection = urllib2.urlopen(URL)
+			formatsConnection = urllib2.urlopen(URL, None, timeout)
 			formatsString = formatsConnection.read()
 			formatsConnection.close()
 			formatsXML = xml.etree.ElementTree.fromstring(formatsString)
@@ -115,8 +119,8 @@ def determineFormats (repositories):
 				if prefix != None:
 					output = output + prefix.text
 					namespace = format.find('{http://www.openarchives.org/OAI/2.0/}metadataNamespace')
-					if namespace != None:
-						output = output + ' (' + namespace.text + ')'
+					if namespace != None and namespace.text != None:
+							output = output + ' (' + namespace.text + ')'
 				else:
 					output = output + 'unknown'
 				print output
@@ -124,6 +128,8 @@ def determineFormats (repositories):
 			print u'Could not retrieve metadata formats: ' + str(err)
 		except xml.etree.ElementTree.ParseError as err:
 			print u'Could not parse XML of presumed metadata information: ' + str(err)
+		except socket.timeout as err:
+			print u'Gave up after ' + str(timeout) + u' second timeout'
 
 
 def updateOAI (repositories, configurationPath):
