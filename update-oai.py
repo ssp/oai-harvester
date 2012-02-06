@@ -122,7 +122,8 @@ def determineFormats (repositories):
 				print output
 		except urllib2.URLError as err:
 			print u'Could not retrieve metadata formats: ' + str(err)
-
+		except xml.etree.ElementTree.ParseError as err:
+			print u'Could not parse XML of presumed metadata information: ' + str(err)
 
 
 def updateOAI (repositories, configurationPath):
