@@ -28,7 +28,8 @@
 			"url": "http://eprints.anu.edu.au/perl/oai2",
 			"sets": {
 				"geo": "Hydrology;Earth;Geography"
-			}
+			},
+			"broken": true
 		},
 		"argen": {
 			"country": "ar",
@@ -40,7 +41,8 @@
 		},
 		"arrow": {
 			"name": "Arrow at UNSW",
-			"url": "http://arrow.unsw.edu.au/apps/ArrowUI/OAIHandler"
+			"url": "http://arrow.unsw.edu.au/apps/ArrowUI/OAIHandler",
+			"broken": true
 		},
 		"birbeck": {
 			"name": "Birkbeck University of London",
@@ -162,7 +164,7 @@
 				"geogr": "ddc:910",
 				"geol": "ddc:550"
 			},
-			"url": "http://edoc.bbaw.de/OAI"
+			"url": "http://edoc.bbaw.de/oai2/oai2.php"
 		},
 		"bergen": {
 			"country": "Norwegen",
@@ -176,7 +178,8 @@
 		"bolgeosc": {
 			"country": "br",
 			"name": "Boletim Paranaense de Geociencias",
-			"url": "http://calvados.c3sl.ufpr.br/ojs2/index.php/geociencias/oai/"
+			"url": "http://calvados.c3sl.ufpr.br/ojs2/index.php/geociencias/oai/",
+			"broken": true
 		},
 		"bologna": {
 			"country": "it",
@@ -202,7 +205,7 @@
 				"pal": "hdl_1983_911",
 				"spat": "hdl_1983_932"
 			},
-			"url": "http://rose.bris.ac.uk/dspace-oai/request"
+			"url": "http://rose.bris.ac.uk/request"
 		},
 		"cadair": {
 			"country": "uk",
@@ -229,7 +232,8 @@
 			"sets": {
 				"journals": "jg"
 			},
-			"url": "http://www.journals.uchicago.edu/perl/oaia2/request"
+			"url": "http://www.journals.uchicago.edu/perl/oaia2/request",
+			"broken": true
 		},
 		"chilescielo": {
 			"country": "cl",
@@ -265,7 +269,8 @@
 				"geol": "7375626A656374733D51:5145",
 				"mining": "7375626A656374733D54:544E"
 			},
-			"url": "http://eprints.du.ac.in/perl/oai2"
+			"url": "http://eprints.du.ac.in/perl/oai2",
+			"broken": true
 		},
 		"digizeit": {
 			"country": "de",
@@ -309,13 +314,13 @@
 			},
 			"url": "http://e-archivo.uc3m.es:8080/dspace-oai/request"
 		},
-		"fed": {
+		"fedoa": {
 			"country": "it",
 			"name": "Napoli FedOA",
 			"sets": {
 				"geo": "7375626A656374733D417265613034"
 			},
-			"url": "http://www.fedoa.unina.it/perl/oai2"
+			"url": "http://www.fedoa.unina.it/cgi/oai2"
 		},
 		"fwg": {
 			"country": "de",
@@ -326,8 +331,9 @@
 			"url": "http://fwg.ub.hsu-hh.de/oai2/oai2.php"
 		},
 		"genesis": {
-			"name": "Nasa Genesis EPrints",
-			"url": "http://genesis2.jpl.nasa.gov/perl/oai2"
+			"name": "NASA Genesis EPrints",
+			"url": "http://genesis2.jpl.nasa.gov/perl/oai2",
+			"broken": true
 		},
 		"csic": {
 			"country": "es",
@@ -348,9 +354,9 @@
 			"country": "uk",
 			"name": "Newcastle Eprint Pilot",
 			"sets": {
-				"geosci": "School_of_Civil_Engineering_and_Geosciences"
+				"34": "School_of_Civil_Engineering_and_Geosciences"
 			},
-			"url": "http://rogue.ncl.ac.uk/xml/index.php"
+			"url": "http://eprint.ncl.ac.uk:9003/"
 		},
 		"hal": {
 			"country": "fr",
@@ -457,7 +463,8 @@
 				"geogr": "7375626A656374733D67",
 				"geol": "7375626A656374733D71:712D7165"
 			},
-			"url": "http://lu-research.lub.lu.se/php/oai.php"
+			"url": "http://lu-research.lub.lu.se/php/oai.php",
+			"broken": "Sets verschwunden, URL vermutlich http://lup.lub.lu.se/oai?verb=Identify"
 		},
 		"lausanne": {
 			"name": "Infoscience Lausanne",
@@ -479,7 +486,7 @@
 			"sets": {
 				"books": "hdl_1721.1_1787,55"
 			},
-			"url": "http://dspace.mit.edu/dspace-oai/request"
+			"url": "http://dspace.mit.edu/oai/request"
 		},
 		"mmu": {
 			"country": "uk",
@@ -642,7 +649,7 @@
 				"geogr": "7375626A656374733D47",
 				"geol": "7375626A656374733D51:5145"
 			},
-			"url": "http://eprints.cdlr.strath.ac.uk/perl/oai2"
+			"url": "http://strathprints.strath.ac.uk/cgi/oai2"
 		},
 		"sussex": {
 			"country": "uk",
@@ -651,7 +658,7 @@
 				"geogr": "7375626A656374733D47",
 				"geol": "7375626A656374733D51:5145"
 			},
-			"url": "http://eprints.sussex.ac.uk/perl/oai2"
+			"url": "http://sro.sussex.ac.uk/cgi/oai2"
 		},
 		"toronto": {
 			"country": "ca",
@@ -717,10 +724,11 @@
 			"country": "au",
 			"name": "UTasER University of Tasmania Eprints Repository",
 			"sets": {
-				"earth": "7375626A656374733D51:5145",
-				"geogr": "7375626A656374733D47:4746"
+				"human": "7375626A656374733D333730303030:333730343030:333730343031",
+				"geol": "7375626A656374733D323630303030:323630313030",
+				"astro": "7375626A656374733D323430303030:323430313030"
 			},
-			"url": "http://eprints.comp.utas.edu.au:81/perl/oai2"
+			"url": "http://http://eprints.utas.edu.au/cgi/oai2"
 		},
 		"utrecht": {
 			"country": "nl",
@@ -732,7 +740,7 @@
 				"physgeogr": "hdl_1874_7394",
 				"pruefgeo": "hdl_1874_70"
 			},
-			"url": "https://dspace.library.uu.nl:8443/dspace-oai/request"
+			"url": "https://dspace.library.uu.nl:8080/dspace-oai/request"
 		},
 		"woods": {
 			"country": "us",
@@ -743,7 +751,7 @@
 				"margeoch": "hdl_1912_102",
 				"ocean": "hdl_1912_7"
 			},
-			"url": "http://darchive.mblwhoilibrary.org:8080/dspace-oai/request"
+			"url": "http://darchive.mblwhoilibrary.org:8080/oai/request"
 		},
 		"whiterose": {
 			"country": "uk",
