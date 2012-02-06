@@ -3,6 +3,8 @@
 import sys
 import os
 import getopt
+from StringIO import StringIO
+import json
 import xml.etree
 from xml.etree import ElementTree
 from lxml import etree
@@ -14,18 +16,24 @@ dataPath = 'data'
 downloadScriptPath = 'harvester/OaiList.pl'
 
 def main():
+	formats = False
 	harvest = False
 	transform = False
 	solrURL = None
 	delete = None
 	configurationPath = ''
 	try:
-		options, arguments = getopt.getopt(sys.argv[1:], 'c:d:hts:D:', ['config=', 'datadir=', 'harvest=', 'transform', 'solr=', 'delete='])
+		# evaluate command line parameters
+		options, arguments = getopt.getopt(sys.argv[1:], 'c:d:fD:hts:', ['config=', 'datadir=', 'formats', 'delete=', 'harvest=', 'transform', 'solr='])
 		for option, value in options:
 			if option in ('-c', '--config'):
 				configurationPath = value
 			elif option in ('-d', '--datadir'):
 				dataPath = value
+			elif option in ('-D', '--delete'):
+				delete = value
+			elif option in ('-f', '--formats'):
+				formats = True
 			elif option in ('-h', '--harvest'):
 				harvest = True
 			elif option in ('-t', '--transform'):
@@ -33,12 +41,13 @@ def main():
 			elif option in ('-s', '--solr'):
 				solrURL = value
 				print value
-			elif option in ('-D', '--delete'):
-				delete = value
 			else:
 				assert False, 'unhandled option'
 
 		repositories = readConfiguration(configurationPath)
+		# run actions determined by the command line parameters
+		if formats:
+			determineFormats(repositories)
 		
 		if delete != None:
 			deleteFiles(delete)
@@ -111,10 +120,43 @@ def deleteFiles (delete):
 		deleteData('solr')
 
 
+
 def deleteData (dataType):
 	path = repositoryPath(None, dataType)
 	print "Deleting folder »" + path + "« …"
 	shutil.rmtree(path)
+
+
+
+def determineFormats (repositories):
+	print ''
+	print u'Determining data formats provided by OAI Servers'
+
+	for repositoryID in sorted(repositories.iterkeys()):
+		repository = repositories[repositoryID]
+		print ''
+		print u'Repository ID »' + repositoryID + u'« supports:'
+		
+		URL = repository['url'] + '?verb=ListMetadataFormats'
+		try:
+			formatsConnection = urllib2.urlopen(URL)
+			formatsString = formatsConnection.read()
+			formatsConnection.close()
+			formatsXML = xml.etree.ElementTree.fromstring(formatsString)
+			formats = formatsXML.iter('{http://www.openarchives.org/OAI/2.0/}metadataFormat')
+			for format in formats:
+				output = '· '
+				prefix = format.find('{http://www.openarchives.org/OAI/2.0/}metadataPrefix')
+				if prefix != None:
+					output = output + prefix.text
+					namespace = format.find('{http://www.openarchives.org/OAI/2.0/}metadataNamespace')
+					if namespace != None:
+						output = output + ' (' + namespace.text + ')'
+				else:
+					output = output + 'unknown'
+				print output
+		except urllib2.URLError as err:
+			print u'Could not retrieve metadata formats: ' + str(err)
 
 
 
