@@ -44,7 +44,12 @@ def main():
 			else:
 				assert False, 'unhandled option'
 
-		repositories = readConfiguration(configurationPath)
+		# read configuration
+		f = open(configurationPath)
+		configuration = json.load(f)
+		f.close()
+		repositories = configuration['servers']
+		
 		# run actions determined by the command line parameters
 		if formats:
 			determineFormats(repositories)
@@ -67,46 +72,6 @@ def main():
 		usage()
 		sys.exit(2)
 
-
-def readConfiguration(configurationPath):
-	# read and parse XML file
-	f = open(configurationPath)
-	configurationText = f.read()
-	f.close()
-	XML = xml.etree.ElementTree.fromstring(configurationText)
-	
-	# loop through <repository> tags to get repositories
-	repositories = {}
-	XMLRepositories = XML.getiterator('repository')
-	for XMLRepository in XMLRepositories:
-		attributes = XMLRepository.attrib
-		if attributes.has_key('id') and attributes['id'] != '':
-			key = attributes['id']
-			repositoryInfo = dict()
-
-			baseURLElement = XMLRepository.find('baseUrl')
-			if baseURLElement != None and baseURLElement.text != None:
-				repositoryInfo['baseURL'] = baseURLElement.text
-				nameElement = XMLRepository.find('fullName')
-				if nameElement != None:
-					repositoryInfo['name'] = nameElement.text
-
-				elementSetElement = XMLRepository.find('set')
-				if elementSetElement != None:
-					repositoryInfo['elementSet'] = elementSetElement.text
-					
-				if repositories.has_key(key):
-					print u'Repository ID »' + key + u'« used multiple times. Just using the first occurrence.'
-				else:
-					repositories[key] = repositoryInfo
-			else:
-				print "Repository »" + key + "« lacks base URL information"
-		else:
-			print "Repository with blank id in configuration: " + xml.etree.ElementTree.tostring(XMLRepository, encoding='utf-8')
-	
-	
-	
-	return repositories
 
 
 def deleteFiles (delete):
