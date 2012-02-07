@@ -113,7 +113,7 @@ def deleteFiles (delete):
 
 
 def deleteData (dataType):
-	path = repositoryPath(None, dataType)
+	path = repositoryPath(dataType)
 	print "Deleting folder »" + path + "« …"
 	shutil.rmtree(path)
 
@@ -159,7 +159,7 @@ def determineFormats (repository):
 
 def updateOAI (repository, configurationPath):
 	print u'Harvest OAI data'
-	repositoryOAIPath = repositoryPath(repository, 'oai')	
+	repositoryOAIPath = repositoryPath('oai', repository)
 	# Find the latest commited download and extract its responseDate.
 	lastResponseDate = None
 	fileList = os.listdir(repositoryOAIPath).sort()
@@ -174,7 +174,7 @@ def updateOAI (repository, configurationPath):
 			lastResponseDate = responseDateElement.text
 			print "Last response date: " + lastResponseDate
 
-	repositoryOAITempPath = repositoryPath(repository, 'oai-temp', True)
+	repositoryOAITempPath = repositoryPath('oai-temp', repository, None, True)
 	# Use the »OaiList.pl« script to download new records from OAI.
 	arguments = [downloadScriptPath, '-v', '-c', configurationPath, '-i', repository['ID'], '-d', repositoryOAITempPath]
 	if lastResponseDate != None:
@@ -186,9 +186,9 @@ def updateOAI (repository, configurationPath):
 
 def transformXML (repository):
 	# Run through XML files in oai-temp folder
-	OAITempPath = repositoryPath(repository, 'oai-temp')
-	OAIPath = repositoryPath(repository, 'oai')
-	solrTempPath = repositoryPath(repository, 'solr-temp', True)
+	OAITempPath = repositoryPath('oai-temp', repository)
+	OAIPath = repositoryPath('oai', repository)
+	solrTempPath = repositoryPath('solr-temp', repository, None, True)
 	if os.path.exists(OAITempPath):
 		fileList = os.listdir(OAITempPath)
 		if fileList != None:
@@ -216,8 +216,8 @@ def transformXML (repository):
 def updateSolr (repository, solrURL):
 	updateURL = solrURL + '/update'
 	
-	repositorySolrTempPath = repositoryPath(repository, 'solr-temp')
-	repositorySolrPath = repositoryPath(repository, 'solr')
+	repositorySolrTempPath = repositoryPath('solr-temp', repository)
+	repositorySolrPath = repositoryPath('solr', repository)
 	fileList = os.listdir(repositorySolrTempPath)
 	print repositorySolrTempPath
 	if fileList != None:
@@ -252,23 +252,27 @@ def moveFile (name, oldFolder, newFolder):
 
 
 
-def repositoryPath (repository, dataType, emptyFolder = False):
+def repositoryPath (dataType, repository = None, dataSet = None, emptyFolder = False):
 	path = dataPath
 	
 	if dataType != None:
 		path = path + '/' + dataType
-		if repository != None:	
+		if repository != None:
 			path = path + '/' + repository['ID']
+			if dataSet != None:
+				path = path + '_' + dataSet
 			
-	if not os.path.exists(path):
-		os.makedirs(path)
-		print "Created folder »" + path + "«"
-	elif emptyFolder == True:
-		if os.listdir(path) != None:
-			if len(os.listdir(path)) > 0:
-				print "Removing " + str(len(os.listdir(path))) + " files from »" + path + "«"
-				shutil.rmtree(path)
-				os.makedirs(path)
+		if not os.path.exists(path):
+			os.makedirs(path)
+			print "Created folder »" + path + "«"
+		elif emptyFolder == True:
+			if os.listdir(path) != None:
+				if len(os.listdir(path)) > 0:
+					print "Removing " + str(len(os.listdir(path))) + " files from »" + path + "«"
+					shutil.rmtree(path)
+					os.makedirs(path)
+	else:
+		printerror('Need a dataType to determine the repositoryPath.')
 
 	return path
 
