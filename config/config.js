@@ -45,6 +45,17 @@
 			"url": "http://arrow.unsw.edu.au/apps/ArrowUI/OAIHandler",
 			"broken": true
 		},
+		"arxiv": {
+			"name": "arXiv",
+			"url": "http://export.arxiv.org/oai2?verb=Identify",
+			"sets": {
+				"math": "math",
+				"stat": "stat",
+				"physics": "physics",
+				"cs": "cs",
+				"nlin": "nlin"
+			}
+		},
 		"birbeck": {
 			"name": "Birkbeck University of London",
 			"country": "uk",
@@ -964,6 +975,11 @@
 			"whiterose_geogrld",
 			"whiterose_geogrsh1",
 			"whiterose_geogrsh2"
+		],
+		"math": [
+			"arxiv_math",
+			"arxiv_stat",
+			"arxiv_cs"
 		],
 		"test": [
 			"geoleoedocs"
