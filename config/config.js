@@ -966,7 +966,7 @@
 			"whiterose_geogrsh2"
 		],
 		"test": [
-			"amsterdam_geo"
+			"geoleoedocs"
 		]
 	}
 }
