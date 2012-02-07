@@ -303,7 +303,7 @@
 			"sets": {
 				"geogr": "7375626A656374733D47:4731"
 			},
-			"url": "http://eprints.dur.ac.uk/perl/oai2"
+			"url": "http://dro.dur.ac.uk/cgi/oai2"
 		},
 		"earchiv": {
 			"country": "es",
@@ -728,7 +728,7 @@
 				"geol": "7375626A656374733D323630303030:323630313030",
 				"astro": "7375626A656374733D323430303030:323430313030"
 			},
-			"url": "http://http://eprints.utas.edu.au/cgi/oai2"
+			"url": "http://eprints.utas.edu.au/cgi/oai2"
 		},
 		"utrecht": {
 			"country": "nl",
@@ -740,7 +740,7 @@
 				"physgeogr": "hdl_1874_7394",
 				"pruefgeo": "hdl_1874_70"
 			},
-			"url": "https://dspace.library.uu.nl:8080/dspace-oai/request"
+			"url": "http://dspace.library.uu.nl:8080/dspace-oai/request"
 		},
 		"woods": {
 			"country": "us",
