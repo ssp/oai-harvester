@@ -3,13 +3,13 @@
 import sys
 import os
 import getopt
-from StringIO import StringIO
 import json
 import xml.etree
 from xml.etree import ElementTree
 from lxml import etree
 import subprocess
 import socket
+import urllib
 import urllib2
 import httplib
 import shutil
@@ -122,13 +122,8 @@ def deleteData (dataType):
 def determineFormats (repository):
 	print u'Supported formats:'
 		
-	timeout = 10
-	URL = repository['url'] + '?verb=ListMetadataFormats'
-	try:
-		formatsConnection = urllib2.urlopen(URL, None, timeout)
-		formatsString = formatsConnection.read()
-		formatsConnection.close()
-		formatsXML = xml.etree.ElementTree.fromstring(formatsString)
+	formatsXML = runOAIRequest(repository, 'ListMetadataFormats', timeout = 10)
+	if formatsXML != None:
 		formats = formatsXML.iter('{http://www.openarchives.org/OAI/2.0/}metadataFormat')
 		for format in formats:
 			output = repository['ID'] + '\t'
@@ -145,15 +140,9 @@ def determineFormats (repository):
 				namespace = namespaceElement.text
 
 			print repository['ID'] + '\t' + prefix + '\t' + namespace
+	else:
+		printerror('Could not list metadata formats.', repository)
 			
-	except urllib2.URLError as err:
-		printerror(u'Could not retrieve metadata formats: ' + str(err), repository)
-	except httplib.InvalidURL as err:
-		printerror(u'Invalid URL »' + URL + u'«: ' + str(err), repository)
-	except xml.etree.ElementTree.ParseError as err:
-		printerror(u'Could not parse XML of presumed metadata information: ' + str(err), repository)
-	except socket.timeout as err:
-		printerror(u'Gave up after ' + str(timeout) + u' second timeout.', repository)
 
 
 
@@ -181,8 +170,40 @@ def updateOAI (repository, configurationPath):
 		arguments += ['-f', lastResponseDate]
 	print 'Running command: ' + ' '.join(arguments)
 	result = subprocess.call(arguments)
+def runOAIRequest (repository, verb, parameters = {}, timeout = 30):
+	parameters['verb'] = verb
+	URL = repository['url'] + '?' + urllib.urlencode(parameters)
+	XMLString = getURL(URL, timeout)
+	XML = None
+	try:
+		XML = xml.etree.ElementTree.fromstring(XMLString)
+	except xml.etree.ElementTree.ParseError as err:
+		printerror(u'Could not parse XML: ' + str(err), repository)
+	
+	return XML
+	
+	
 
 
+def getURL (URL, timeout = 30):
+	result = None
+	try:
+		print u'Loading ' + URL
+		connection = urllib2.urlopen(URL, None, timeout)
+		result = connection.read()
+		connection.close()
+	
+	except httplib.InvalidURL as err:
+		printerror(u'Invalid URL »' + URL + u'«: ' + str(err), repository)
+	except urllib2.URLError as err:
+		printerror(u'Could not load URL: ' + str(err), repository)
+	except socket.timeout as err:
+		printerror(u'Gave up after ' + str(timeout) + u' second timeout.', repository)
+	
+	return result
+
+
+	
 
 def transformXML (repository):
 	# Run through XML files in oai-temp folder
