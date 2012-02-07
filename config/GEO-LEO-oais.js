@@ -20,7 +20,8 @@
 			"sets": {
 				"geo": "hdl_1871_11336"
 			},
-			"url": "http://dare.ubvu.vu.nl/oai/request"
+			"url": "http://dare.ubvu.vu.nl/oai/request",
+			"broken": "Set existiert nicht mehr"
 		},
 		"anu": {
 			"name": "Australia National University",
@@ -31,11 +32,11 @@
 			},
 			"broken": true
 		},
-		"argen": {
+		"argentinascielo": {
 			"country": "ar",
 			"name": "Scielo Argentina",
 			"sets": {
-				"a": "0004-4822"
+				"geo": "0004-4822"
 			},
 			"url": "http://www.scielo.org.ar/oai/scielo-oai.php"
 		},
