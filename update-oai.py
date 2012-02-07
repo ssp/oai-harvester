@@ -11,6 +11,7 @@ from lxml import etree
 import subprocess
 import socket
 import urllib2
+import httplib
 import shutil
 
 dataPath = 'data'
@@ -146,11 +147,13 @@ def determineFormats (repository):
 			print repository['ID'] + '\t' + prefix + '\t' + namespace
 			
 	except urllib2.URLError as err:
-		printerror('Could not retrieve metadata formats: ' + str(err))
+		printerror(u'Could not retrieve metadata formats: ' + str(err), repository)
+	except httplib.InvalidURL as err:
+		printerror(u'Invalid URL »' + URL + u'«: ' + str(err), repository)
 	except xml.etree.ElementTree.ParseError as err:
-		printerror('Could not parse XML of presumed metadata information: ' + str(err))
+		printerror(u'Could not parse XML of presumed metadata information: ' + str(err), repository)
 	except socket.timeout as err:
-		printerror('Gave up after ' + str(timeout) + ' second timeout.')
+		printerror(u'Gave up after ' + str(timeout) + u' second timeout.', repository)
 
 
 
