@@ -770,7 +770,6 @@
 	},
 	"collections": {
 		"geoleo-oai": [
-			"geoleoedocs",
 			"africa_environ",
 			"africa_hydro",
 			"amsterdam_geo",
